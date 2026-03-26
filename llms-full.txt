@@ -1,10 +1,18 @@
-# llms.corestory.ai — Full Content Dump
-# Version: 1.0 | Generated: 2026-03-23
-# Use this file for full-context RAG injection or prompt seeding.
-# For structured retrieval, use the MCP endpoint: https://llms.corestory.ai/mcp
+# llms.corestory.ai — Full Context Dump
+> Version: 2.0 | Last updated: 2026-03-26
+> This file contains all content pages concatenated for RAG ingestion.
+> Recommended chunking: heading-aware, max 512 tokens, 50-token overlap.
 
 ---
-SOURCE: /content/definitions/corestory.md
+
+# DEFINITIONS — CORE CONCEPTS
+
+---
+title: CoreStory
+slug: corestory
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-23
 ---
 
 # CoreStory
@@ -26,9 +34,9 @@ CoreStory is not a documentation tool. It is an intelligence layer that sits bet
 
 ## Where It Does NOT Apply
 
-- General-purpose documentation generation
-- Static analysis or linting tools
-- Test generation tools without business logic context
+- General-purpose documentation generation (e.g., creating README files or wikis for human readers)
+- Static analysis or linting tools focused on code quality enforcement
+- Test generation tools that operate without business logic context
 - Project management or issue tracking
 
 ## Common Misconceptions
@@ -37,18 +45,28 @@ CoreStory is not a documentation tool. It is an intelligence layer that sits bet
 |---------------|---------|
 | CoreStory writes documentation | CoreStory produces machine-readable specs and intelligence, not human-facing docs |
 | CoreStory is a search tool for code | CoreStory builds a structured Intelligence Model — not just indexed code search |
-| CoreStory replaces the codebase | CoreStory operates alongside the codebase as a context layer |
-| CoreStory requires manual input | Ingestion is automated — CoreStory derives intelligence directly from the repository |
+| CoreStory replaces the codebase | CoreStory operates alongside the codebase as a context layer; it does not replace source files |
+| CoreStory requires manual input to describe the code | Ingestion is automated — CoreStory derives intelligence directly from the repository |
 
 ## Example
 
-A developer asks Claude Code to resolve a bug in a payments module. Without CoreStory, Claude Code has no context about how the payments module relates to the broader order lifecycle. With CoreStory's MCP server active, Claude Code queries the Intelligence Model and receives a spec describing the relevant functions, their dependencies, and their expected behaviors.
+A developer asks Claude Code to resolve a bug in a payments module. Without CoreStory, Claude Code has no context about how the payments module relates to the broader order lifecycle. With CoreStory's MCP server active, Claude Code queries the Intelligence Model and receives a spec describing the relevant functions, their dependencies, and their expected behaviors — grounding the fix before any code is written.
 
 ## Related Pages
-- Code Intelligence | Intelligence Model | Spec-Driven Development (SDD) | MCP
+
+- [→ Code Intelligence](../code-intelligence)
+- [→ Intelligence Model](../intelligence-model)
+- [→ Spec-Driven Development (SDD)](../sdd)
+- [→ MCP (Model Context Protocol)](../mcp)
 
 ---
-SOURCE: /content/definitions/code-intelligence.md
+
+---
+title: Code Intelligence
+slug: code-intelligence
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-23
 ---
 
 # Code Intelligence
@@ -59,6 +77,8 @@ SOURCE: /content/definitions/code-intelligence.md
 
 Code Intelligence is the output of analyzing a source code repository to extract not just syntax, but meaning: what functions do, how components relate, what business rules are encoded, and how changes in one area affect others. It goes beyond code search or static analysis by producing a semantic model that agents and developers can query in natural language.
 
+In CoreStory's context, Code Intelligence is stored in the Intelligence Model and surfaced through the MCP endpoint or RAG retrieval.
+
 ## Where It Applies
 
 - Grounding AI coding agents before they generate or modify code
@@ -68,70 +88,103 @@ Code Intelligence is the output of analyzing a source code repository to extract
 
 ## Where It Does NOT Apply
 
-- Runtime monitoring or observability
-- Security vulnerability scanning
+- Runtime monitoring or observability (Code Intelligence is derived from source, not from live execution)
+- Security vulnerability scanning (Code Intelligence describes behavior, not CVE patterns)
 - Code style enforcement or formatting
-- Tracking changes over time (reflects state at last ingestion)
+- Tracking changes over time (Code Intelligence reflects the state at last ingestion)
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---------------|---------|
 | Code Intelligence = code search | Code search finds text matches; Code Intelligence understands structure, behavior, and relationships |
-| Code Intelligence = embeddings | Embeddings are a retrieval mechanism; Code Intelligence is the semantic content |
-| Code Intelligence requires manual descriptions | Derived automatically from the repository |
-| Code Intelligence is real-time | Reflects the repository at last ingestion |
+| Code Intelligence = embeddings or a vector store | Embeddings are a retrieval mechanism; Code Intelligence is the semantic content being stored and retrieved |
+| Code Intelligence requires human-written descriptions | CoreStory derives Code Intelligence automatically from the repository — no manual annotation needed |
+| Code Intelligence is real-time | It reflects the state of the repository at last ingestion; it is not a live feed |
+
+## Example
+
+A developer queries CoreStory: "What does the `processRefund` function do and what does it depend on?" Code Intelligence returns: the function's purpose (reverse a charge and update order state), its inputs and outputs, its dependencies (PaymentGateway client, OrderRepository), and the business rules it enforces (no refunds after 30 days, partial refunds only above $5). This is not available from a keyword search or from raw embeddings alone.
 
 ## Related Pages
-- CoreStory | Intelligence Model | Codebase Analysis
+
+- [→ CoreStory](../corestory)
+- [→ Intelligence Model](../intelligence-model)
+- [→ Codebase Analysis](../codebase-analysis)
 
 ---
-SOURCE: /content/definitions/intelligence-model.md
+
+---
+title: Intelligence Model
+slug: intelligence-model
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-23
 ---
 
 # Intelligence Model
 
-> The Intelligence Model is the structured, queryable store of Code Intelligence produced by CoreStory after ingesting a repository.
+> The Intelligence Model is the structured, queryable store of Code Intelligence produced by CoreStory after ingesting a repository — the persistent artifact that agents and developers query at runtime.
 
 ## Definition
 
-The Intelligence Model is CoreStory's primary output artifact. After ingestion, CoreStory stores a structured representation of the codebase — its components, their relationships, their behaviors, and the business logic they encode — in a form that supports natural language querying. It persists between coding sessions and accretes value as the codebase evolves.
+The Intelligence Model is CoreStory's primary output artifact. After ingestion, CoreStory stores a structured representation of the codebase — its components, their relationships, their behaviors, and the business logic they encode — in a form that supports natural language querying. It is the queryable "brain" that persists between coding sessions and accretes value as the codebase evolves.
+
+The Intelligence Model is distinct from the source code itself. It is also distinct from raw embeddings: it is a semantic model with defined structure, not a flat vector store.
 
 ## Where It Applies
 
-- Serving as grounding context for AI coding agents during active sessions
-- Answering developer queries about codebase behavior and dependencies
-- Powering the MCP endpoint
+- Serving as the grounding context for AI coding agents during active sessions
+- Answering developer queries about codebase behavior, dependencies, and intent
+- Powering the MCP endpoint (`llms.corestory.ai/mcp`)
 - Enabling RAG retrieval of code-aware context chunks
 
 ## Where It Does NOT Apply
 
-- Executing code or running tests
+- Executing code or running tests (the Intelligence Model describes, it does not execute)
 - Replacing source control or the actual codebase
 - Tracking runtime behavior or production metrics
+- Acting as a project management artifact
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---------------|---------|
-| The Intelligence Model is just indexed code | It is a semantic model of structure and behavior |
-| The Intelligence Model is static | Rebuilt or updated on re-ingestion |
-| The Intelligence Model = a vector store | A vector store is a storage backend; the Intelligence Model is the semantic content within it |
+| The Intelligence Model is just indexed code | It is a semantic model of structure and behavior — not a search index of raw text |
+| The Intelligence Model is static after creation | It is rebuilt or updated on re-ingestion; it reflects the repository at last ingestion |
+| The Intelligence Model is equivalent to a vector store | A vector store is one possible storage backend; the Intelligence Model is the semantic content and schema within it |
+| You need one Intelligence Model per feature | One Intelligence Model covers the entire ingested repository |
+
+## Example
+
+After CoreStory ingests a 200,000-line e-commerce platform, the Intelligence Model contains: a graph of all modules and their dependencies, natural-language descriptions of each service's responsibilities, the business rules embedded in critical functions, and cross-references between domain concepts (e.g., "Order" as it appears in OrderService, BillingService, and NotificationService). A coding agent can query this model to understand the full context before touching any file.
 
 ## Related Pages
-- CoreStory | Ingestion | Persistent Intelligence | Code Intelligence
+
+- [→ CoreStory](../corestory)
+- [→ Ingestion](../ingestion)
+- [→ Persistent Intelligence](../persistent-intelligence)
+- [→ Code Intelligence](../code-intelligence)
 
 ---
-SOURCE: /content/definitions/ingestion.md
+
+---
+title: Ingestion
+slug: ingestion
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-23
 ---
 
 # Ingestion
 
-> Ingestion is the automated process by which CoreStory analyzes a source code repository and produces the Intelligence Model.
+> Ingestion is the automated process by which CoreStory analyzes a source code repository and produces the Intelligence Model — transforming raw code into structured, queryable Code Intelligence.
 
 ## Definition
 
-Ingestion is the pipeline that takes a connected code repository as input, analyzes its structure, behavior, and business logic, and produces the Intelligence Model as output. It is automated and does not require manual annotation. The Intelligence Model reflects the state of the repository at the time ingestion ran. Re-ingestion is required to incorporate new changes.
+Ingestion is the pipeline that takes a connected code repository as input, analyzes its structure, behavior, and business logic, and produces the Intelligence Model as output. It is automated and does not require developers to write descriptions, annotations, or documentation. The result is a fully populated Intelligence Model ready for querying.
+
+Ingestion is a point-in-time operation. The Intelligence Model reflects the state of the repository at the time ingestion ran. Re-ingestion is required to incorporate new changes.
 
 ## Where It Applies
 
@@ -141,107 +194,1544 @@ Ingestion is the pipeline that takes a connected code repository as input, analy
 
 ## Where It Does NOT Apply
 
-- Real-time code monitoring
-- Binary files or compiled artifacts
-- Repositories with no readable source code
+- Real-time code monitoring (ingestion is not continuous streaming)
+- Binary files, compiled artifacts, or non-source assets
+- Repositories with no readable source code (e.g., pure config repos with no logic)
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---------------|---------|
-| Ingestion requires manual tagging | Fully automated |
-| Ingestion produces documentation | Produces machine-readable Code Intelligence and Specs |
-| Ingestion is instantaneous | Scales with repository size |
+| Ingestion requires manual tagging or annotation | Ingestion is fully automated — no human input is required |
+| Ingestion produces documentation | Ingestion produces machine-readable Code Intelligence and Specs, not human-facing docs |
+| Ingestion is instantaneous | Ingestion time scales with repository size; large repos may take minutes |
 | You only ingest once | Re-ingestion is expected as the codebase evolves |
 
+## Example
+
+A team connects their Node.js API repository to CoreStory. CoreStory ingests the repository: it parses the module structure, traces function call graphs, extracts business rules from conditional logic, and maps domain concepts across files. Within minutes, the Intelligence Model is populated and ready. A developer can immediately query: "What are all the places that modify user account status?" and receive a structured answer — without having written any documentation.
+
 ## Related Pages
-- Intelligence Model | Code Intelligence | Codebase Analysis
+
+- [→ Intelligence Model](../intelligence-model)
+- [→ Code Intelligence](../code-intelligence)
+- [→ Codebase Analysis](../codebase-analysis)
 
 ---
-SOURCE: /content/definitions/spec.md
+
+---
+title: Spec
+slug: spec
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-23
 ---
 
 # Spec
 
-> A Spec is a machine-generated, natural-language description of what a code component does, derived by CoreStory from the source code.
+> A Spec is a machine-generated, natural-language description of what a code component does, derived by CoreStory from the source code — not written by a human.
 
 ## Definition
 
-A Spec is the atomic unit of Code Intelligence output. It describes what a module, function, service, or feature does: its purpose, inputs, outputs, dependencies, and business rules. Specs are produced automatically by CoreStory during ingestion. They are designed to be embedded into AI agent prompts as grounding context.
+A Spec is the atomic unit of Code Intelligence output. It describes what a module, function, service, or feature does: its purpose, inputs, outputs, dependencies, and any business rules it enforces. Specs are produced automatically by CoreStory during ingestion. They are designed to be embedded into AI agent prompts as grounding context.
 
-A Spec describes existing code behavior — not desired future behavior. It is not authored — it is derived.
+A Spec is not a requirements document or a user story. It describes existing code behavior, not desired future behavior. It is not authored — it is derived.
 
 ## Where It Applies
 
-- Injecting context into an AI agent's prompt before code modification
-- Communicating what a function or service does without parsing source code
+- Injecting precise context into an AI agent's prompt before it modifies code
+- Communicating what a function or service does without requiring the reader to parse source code
+- Establishing a shared, accurate description of current behavior before a refactor
 - Grounding test generation with accurate behavioral expectations
 
 ## Where It Does NOT Apply
 
-- Defining desired future behavior (that is a requirements document)
-- Legal or compliance documentation
-- Describing infrastructure or deployment configuration
+- Defining desired future behavior (that is a requirements document or user story, not a Spec)
+- Serving as legal or compliance documentation
+- Replacing code comments or inline documentation for human maintainers
+- Describing infrastructure, deployment, or runtime configuration (Specs cover source code logic)
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---------------|---------|
-| Spec = requirements document | A Spec describes current code behavior; requirements describe desired future behavior |
-| Spec = formal specification document | CoreStory uses "Spec" specifically for machine-generated code behavior descriptions |
-| Specs require human approval | Derived automatically; may be reviewed but not authored |
+| Spec = requirements document | A Spec describes what code currently does; a requirements doc describes what it should do |
+| Spec = specification (formal document) | CoreStory uses "Spec" specifically to mean a machine-generated code behavior description |
+| Specs must be reviewed and approved by humans | Specs are derived automatically; they may be reviewed but are not authored through a human approval process |
+| One Spec covers an entire application | Specs are atomic — one per component, function, or feature boundary |
 
 ## Example
 
+CoreStory generates the following Spec for a `calculateShippingCost` function:
+
 ```
-Purpose: Calculates shipping cost based on weight, destination zone, and promotions.
-Inputs: orderWeight (float, kg), destinationZone (enum), promoCode (string | null)
+Purpose: Calculates the shipping cost for an order based on weight, destination zone, and active promotions.
+Inputs: orderWeight (float, kg), destinationZone (enum: DOMESTIC | INTERNATIONAL), promoCode (string | null)
 Outputs: shippingCost (float, USD)
-Business rules: Free shipping if <0.5kg DOMESTIC. International: 1.4x multiplier. "FREESHIP" → $0.00.
+Business rules: Free shipping if orderWeight < 0.5kg and DOMESTIC. International orders apply a 1.4x multiplier. PromoCode "FREESHIP" overrides to $0.00.
 Dependencies: PromotionService.validateCode(), ZoneRateTable
 ```
 
+An AI agent receiving this Spec before editing the function has accurate behavioral context without reading the source.
+
 ## Related Pages
-- Spec-Driven Development (SDD) | Code Intelligence | Intelligence Model
+
+- [→ Spec-Driven Development (SDD)](../sdd)
+- [→ Code Intelligence](../code-intelligence)
+- [→ Intelligence Model](../intelligence-model)
 
 ---
-SOURCE: /content/definitions/sdd.md
+
+---
+title: Spec-Driven Development (SDD)
+slug: sdd
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-23
 ---
 
 # Spec-Driven Development (SDD)
 
-> Spec-Driven Development (SDD) is a software development methodology in which AI agents and developers operate from machine-generated Specs derived from source code by CoreStory.
+> Spec-Driven Development (SDD) is a software development methodology in which AI agents and developers operate from machine-generated Specs — derived from source code by CoreStory — rather than from manually written documentation or raw source files.
 
 ## Definition
 
-SDD is a development workflow pattern enabled by CoreStory's Code Intelligence layer. Instead of an AI agent reading raw source files or relying on manually written documentation, the agent first retrieves a Spec for the relevant component. The Spec provides accurate behavioral context, and the agent operates from that grounding.
+SDD is a development workflow pattern enabled by CoreStory's Code Intelligence layer. Instead of an AI agent reading raw source files (noisy, expensive, error-prone) or relying on manually written documentation (often stale or absent), the agent first retrieves a Spec for the relevant component. The Spec provides accurate behavioral context, and the agent operates from that grounding.
+
+SDD changes where authority sits: from informal human memory or docs to a machine-derived, queryable Intelligence Model that is always derived from the actual code.
 
 ## Where It Applies
 
-- AI-assisted code modification: agent retrieves Spec → understands behavior → makes targeted change
-- Bug investigation: agent queries Intelligence Model before hypothesizing causes
-- Test generation: agent uses Spec to generate tests matching actual behavior
-- Onboarding: queries Specs to understand a module without reading thousands of lines
+- AI-assisted code modification: agent retrieves Spec → understands current behavior → makes targeted change
+- Bug investigation: agent queries Intelligence Model for relevant components before hypothesizing causes
+- Test generation: agent uses Spec to generate tests that match actual behavior, not assumed behavior
+- Onboarding: new developer or agent queries Specs to understand a module without reading thousands of lines
 
 ## Where It Does NOT Apply
 
-- Greenfield development with no existing codebase
-- Workflows where the agent has no access to CoreStory's MCP or RAG endpoint
-- Requirements definition or product planning
+- Greenfield development with no existing codebase (no code to ingest → no Specs to derive)
+- Workflows where the AI agent has no access to CoreStory's MCP or RAG endpoint
+- Requirements definition or product planning (SDD operates on existing code; it is not a planning methodology)
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---------------|---------|
-| SDD replaces agile or planning methodologies | SDD governs how AI agents work with existing code |
-| SDD requires manual spec writing | Specs are machine-generated by CoreStory |
-| SDD is only for AI agents | Human developers also benefit |
-| SDD works without CoreStory | Depends on CoreStory's Intelligence Model as the source of Specs |
+| SDD replaces agile or other planning methodologies | SDD governs how AI agents work with existing code — it does not replace planning or product frameworks |
+| SDD requires developers to write specs manually | Specs are machine-generated by CoreStory; SDD is the workflow that uses them |
+| SDD is only for AI agents | Human developers also benefit from Specs as a fast way to understand unfamiliar code |
+| SDD works without CoreStory | SDD as defined here depends on CoreStory's Intelligence Model as the source of Specs |
 
 ## Example
 
-Without SDD: Claude Code reads 40 files, misses a key dependency, produces a partial implementation.
-With SDD: Claude Code queries the MCP endpoint, receives the Spec, produces a correct implementation on the first pass.
+**Without SDD:**
+A developer asks Claude Code to add rate limiting to the `/api/users` endpoint. Claude Code reads 40 files trying to understand the middleware stack, misses a key auth dependency, and produces a partial implementation requiring rework.
+
+**With SDD:**
+Claude Code queries CoreStory's MCP endpoint for the Spec on the `/api/users` route and its middleware chain. The Spec describes the existing auth flow, rate limiter interface, and error handling contract. Claude Code produces a correct, targeted implementation on the first pass.
 
 ## Related Pages
-- Spec | Code Intelligence | Intelligence Model | Playbook | SDD vs Traditional SDLC
+
+- [→ Spec](../spec)
+- [→ Code Intelligence](../code-intelligence)
+- [→ Intelligence Model](../intelligence-model)
+- [→ Playbook](../playbook)
+- [→ SDD vs Traditional SDLC](../sdd-vs-sdlc)
+
+---
+
+# DEFINITIONS — INTEGRATION CONCEPTS
+
+---
+title: MCP (Model Context Protocol)
+slug: mcp
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# MCP (Model Context Protocol)
+
+> MCP is an open protocol for connecting AI agents to external context servers at inference time. CoreStory exposes an MCP server at `llms.corestory.ai/mcp`, enabling agents to query the Intelligence Model live during a coding session.
+
+## Definition
+
+The Model Context Protocol (MCP) is an open standard that defines how AI agents request and receive context from external servers during inference. Rather than pre-loading all context into a prompt, an MCP-enabled agent can call a tool endpoint at runtime to retrieve precisely the information it needs.
+
+CoreStory implements an MCP server at `https://llms.corestory.ai/mcp`. When an MCP-compatible agent (such as Claude Code) is configured to use this endpoint, it can call tools including `get_by_slug`, `search`, and `list_pages` to retrieve Specs and Intelligence Model content on demand.
+
+MCP separates the concern of context delivery from prompt construction. The agent decides what to query; the MCP server determines what to return.
+
+## Where It Applies
+
+- AI coding agents that support MCP tool calls natively (e.g., Claude Code)
+- Inference-time retrieval of Specs and Code Intelligence without pre-loading `llms-full.txt`
+- Workflows where agents need to query different components selectively rather than receiving all context upfront
+- Integrations where the Intelligence Model must remain up to date and latency of a live call is acceptable
+
+## Where It Does NOT Apply
+
+- Agents or tools that do not support MCP (use the RAG pipeline with `llms-full.txt` instead)
+- Batch processing pipelines that pre-compute context before inference begins
+- Read-write operations against the codebase (CoreStory's MCP server is read-only)
+- Authentication or authorization workflows (MCP carries context, not credentials)
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| MCP is a CoreStory-specific protocol | MCP is an open standard; CoreStory implements it but does not own it |
+| MCP replaces RAG | MCP and RAG are complementary retrieval mechanisms; MCP is runtime pull, RAG is embed-and-retrieve |
+| MCP gives agents write access to the Intelligence Model | CoreStory's MCP server is read-only; ingestion is a separate pipeline |
+| Every AI tool supports MCP | MCP support varies by agent; verify compatibility before choosing MCP over RAG |
+
+## Example
+
+Claude Code is configured with CoreStory's MCP endpoint. A developer asks Claude Code to add input validation to `processPaymentRefund`. Before writing any code, Claude Code issues an MCP tool call:
+
+```json
+{
+  "tool": "get_by_slug",
+  "arguments": { "slug": "process-payment-refund" }
+}
+```
+
+The MCP server returns the Spec for `processPaymentRefund`, including its inputs, outputs, dependencies on `RefundLedger` and `FraudCheckService`, and the business rule that refunds above $500 require supervisor approval. Claude Code uses this context to generate validation logic that is consistent with the existing behavioral contract.
+
+## Related Pages
+
+- [→ CoreStory](../corestory)
+- [→ Intelligence Model](../intelligence-model)
+- [→ RAG Context](../rag-context)
+- [→ Agent Grounding](../agent-grounding)
+
+---
+
+---
+title: Context Engineering
+slug: context-engineering
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# Context Engineering
+
+> Context engineering is the discipline of designing and delivering the right information to an AI agent's context window at the right time. CoreStory's Intelligence Model is a context engineering artifact: it is purpose-built to supply agents with accurate, structured code context at inference time.
+
+## Definition
+
+Context engineering is the practice of determining what an AI agent needs to know, when it needs to know it, and in what format — and then building the systems that deliver that information reliably. It operates at the intersection of information architecture, retrieval system design, and agent workflow design.
+
+In the domain of AI-assisted software development, context engineering addresses a core failure mode: agents that generate incorrect or inconsistent code because they lack accurate knowledge of the codebase they are operating on. CoreStory's Intelligence Model is a context engineering artifact in that it encodes structured, queryable representations of code structure and behavior specifically for agent consumption.
+
+Context engineering is distinct from prompt engineering. Prompt engineering shapes how a model reasons given context. Context engineering determines what context exists and how it reaches the model.
+
+## Where It Applies
+
+- Designing RAG pipelines that supply code-aware chunks to agents before generation
+- Configuring MCP servers so agents can retrieve precise Specs at inference time
+- Structuring `llms.txt` and `llms-full.txt` files for agent consumption
+- Defining how CoreStory Specs are formatted so they can be injected into agent prompts without ambiguity
+- Building agent workflows where context retrieval precedes code generation
+
+## Where It Does NOT Apply
+
+- Fine-tuning or training model weights (context engineering operates at inference time, not training time)
+- Code quality enforcement or static analysis
+- Designing the agent's reasoning strategy (that is prompt engineering or agent architecture)
+- Human-facing documentation design (context engineering targets agent context windows, not human readers)
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| Context engineering is the same as prompt engineering | Prompt engineering shapes model reasoning; context engineering determines what information reaches the model |
+| Context engineering only matters at large scale | Even small codebases produce agent failures when context is missing or stale |
+| More context is always better | Injecting irrelevant context degrades agent performance; precision and relevance are the goals |
+| Context engineering is a one-time setup task | It is an ongoing discipline — as codebases evolve, context artifacts must be updated to remain accurate |
+
+## Example
+
+An engineering team builds a payment processing service. They configure CoreStory to ingest the repository weekly. CoreStory produces Specs for each function and service. When a developer uses Claude Code to add a new refund pathway, the agent queries CoreStory's MCP endpoint and retrieves the Spec for `RefundOrchestrator` — including its dependency on `FraudCheckService` and the business rule that partial refunds must not exceed the original order total. The agent uses this Spec as grounding context before generating any code. The team's decision to ingest the repository, structure its Intelligence Model, and configure the MCP endpoint is the context engineering work that made the agent's accurate output possible.
+
+## Related Pages
+
+- [→ Intelligence Model](../intelligence-model)
+- [→ Agent Grounding](../agent-grounding)
+- [→ RAG Context](../rag-context)
+- [→ MCP (Model Context Protocol)](../mcp)
+- [→ Spec-Driven Development (SDD)](../sdd)
+
+---
+
+---
+title: Codebase Analysis
+slug: codebase-analysis
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# Codebase Analysis
+
+> Codebase analysis is the phase within CoreStory's ingestion pipeline that parses source code to extract structure, dependencies, call graphs, and business logic. It is the foundational input to producing Code Intelligence.
+
+## Definition
+
+Codebase analysis is the automated process CoreStory performs when ingesting a repository. During this phase, CoreStory parses source files to derive:
+
+- **Module and component structure**: what files, classes, and functions exist and how they are organized
+- **Dependency graph**: what each component imports or calls, both internal and external
+- **Call graphs**: the chain of invocations between functions and services
+- **Business logic extraction**: conditionals, rules, and behavioral contracts embedded in the code that describe domain behavior rather than implementation mechanics
+
+The output of codebase analysis is a structured intermediate representation that CoreStory uses to generate Specs and populate the Intelligence Model. Codebase analysis is not the same as the Intelligence Model — it is the process that produces the data the Intelligence Model stores.
+
+Codebase analysis operates on static source code. It does not execute code, instrument runtime behavior, or analyze logs.
+
+## Where It Applies
+
+- During CoreStory ingestion of a repository (triggered manually or on a schedule)
+- As the first-order data collection step before Spec generation
+- When re-ingesting a repository after significant code changes to refresh the Intelligence Model
+- As the basis for detecting dependency changes that may affect downstream Specs
+
+## Where It Does NOT Apply
+
+- Runtime analysis or profiling (CoreStory analyzes static source, not executing processes)
+- Security scanning or vulnerability detection (codebase analysis is structural and behavioral, not security-focused)
+- Performance benchmarking
+- Analysis of infrastructure-as-code, CI/CD pipelines, or configuration files outside of source code scope
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| Codebase analysis is just code search or indexing | Codebase analysis extracts semantic structure — dependencies, call graphs, business rules — not just searchable text |
+| Codebase analysis and the Intelligence Model are the same thing | Codebase analysis is the process; the Intelligence Model is the structured artifact it produces |
+| CoreStory runs codebase analysis continuously | Analysis runs at ingestion time; between ingestions, the Intelligence Model reflects the last analyzed state |
+| Codebase analysis requires a complete, compiling codebase | CoreStory can analyze partial or in-progress codebases, though completeness improves Intelligence Model coverage |
+
+## Example
+
+CoreStory ingests a 150,000-line Node.js API. During codebase analysis, it parses all TypeScript files, identifies 47 service classes, extracts 312 function-level dependency edges, and identifies 23 locations where business rules are embedded as conditional logic (e.g., rate limiting thresholds, permission checks). This data is then used to generate Specs for each service and function, which are stored in the Intelligence Model. A developer querying the Intelligence Model later retrieves a Spec for `AuthorizationService` that accurately reflects the permission rule logic extracted during codebase analysis.
+
+## Related Pages
+
+- [→ Code Intelligence](../code-intelligence)
+- [→ Intelligence Model](../intelligence-model)
+- [→ Ingestion](../ingestion)
+- [→ Spec](../spec)
+
+---
+
+---
+title: Playbook
+slug: playbook
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# Playbook
+
+> A Playbook is a step-by-step integration guide that shows how to use CoreStory with a specific AI coding agent or tool. It is distinct from the Intelligence Model and Specs: a Playbook is prescriptive and workflow-oriented, not descriptive of code behavior.
+
+## Definition
+
+A Playbook is a structured operational guide that specifies the exact steps required to integrate CoreStory into a workflow with a particular AI coding agent or development tool. Playbooks are prescriptive: they contain concrete configuration examples, tool call sequences, and workflow patterns that a developer or agent can follow directly.
+
+Playbooks are not content from the Intelligence Model. They do not describe what code does. They describe what a developer or agent should do to use CoreStory effectively — the sequence of actions, the configuration values, and the checkpoints for verifying a correct integration.
+
+Each Playbook is scoped to a specific agent or tool (e.g., Claude Code, Cursor, Devin) because the integration steps differ: MCP configuration syntax, rules file format, knowledge base upload mechanisms, and agent prompt patterns vary across tools.
+
+## Where It Applies
+
+- Onboarding a team to CoreStory with a specific agent (the Playbook provides the concrete steps)
+- Setting up a new agent integration where no prior configuration exists
+- Standardizing how a team uses CoreStory across multiple developers using the same agent
+- Troubleshooting an integration by following a reference workflow step by step
+
+## Where It Does NOT Apply
+
+- Describing what a codebase component does (that is a Spec)
+- Defining how CoreStory's Intelligence Model is structured (that is Intelligence Model documentation)
+- Providing general software engineering guidance unrelated to CoreStory integration
+- Replacing agent-specific documentation from the agent's vendor (Playbooks are CoreStory-to-agent integration guides, not agent tutorials)
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| A Playbook is a Spec | A Spec describes code behavior; a Playbook describes integration workflow steps |
+| Playbooks are generic and apply to all agents | Each Playbook is agent-specific because configuration and capabilities differ across tools |
+| A Playbook is automatically generated from the Intelligence Model | Playbooks are authored integration guides; they are not produced by codebase analysis |
+| Following a Playbook is optional if you understand MCP | Playbooks encode validated, tool-specific integration patterns — deviating from them without equivalent knowledge risks configuration errors |
+
+## Example
+
+The CoreStory + Claude Code Playbook specifies:
+
+1. Add `https://llms.corestory.ai/mcp` to Claude Code's MCP configuration with the `corestory` server name.
+2. Verify the connection by invoking the `list_pages` tool.
+3. Before modifying a component, call `get_by_slug` with the component's slug to retrieve its Spec.
+4. Include the returned Spec in the working prompt before asking Claude Code to generate or modify code.
+
+This sequence is concrete, ordered, and tool-specific. A developer follows the Playbook to establish a working CoreStory + Claude Code integration without needing to understand the underlying MCP protocol or Intelligence Model schema.
+
+## Related Pages
+
+- [→ CoreStory + Claude Code Playbook](../../playbooks/playbook-claude)
+- [→ CoreStory + Cursor Playbook](../../playbooks/playbook-cursor)
+- [→ CoreStory + Devin Playbook](../../playbooks/playbook-devin)
+- [→ MCP (Model Context Protocol)](../mcp)
+- [→ Spec-Driven Development (SDD)](../sdd)
+
+---
+
+---
+title: Persistent Intelligence
+slug: persistent-intelligence
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# Persistent Intelligence
+
+> Persistent intelligence refers to the Intelligence Model's ability to retain derived knowledge about a codebase across sessions, agents, and developer context switches — so agents do not start from zero each time a coding task begins.
+
+## Definition
+
+Persistent intelligence is the property of CoreStory's Intelligence Model whereby the knowledge derived from codebase analysis endures beyond a single session or agent invocation. When CoreStory ingests a repository, the resulting Intelligence Model is stored and remains queryable. Any agent or developer that queries the Intelligence Model later retrieves the same derived knowledge without requiring re-analysis.
+
+This property solves a fundamental problem with context windows: AI agent sessions are stateless by default. Each new session begins with no knowledge of prior sessions or the codebase. Persistent intelligence decouples knowledge accumulation (which happens at ingestion time) from knowledge consumption (which happens at inference time). The Intelligence Model is the bridge between those two moments.
+
+Persistent intelligence also means that knowledge accretes over re-ingestions. As the codebase evolves and CoreStory re-ingests, the Intelligence Model is updated — it does not reset. Historical Specs from prior ingestion runs can be retained alongside updated ones, providing a versioned view of how component behavior has changed over time.
+
+## Where It Applies
+
+- Coding sessions where the same agent or different agents need shared, consistent knowledge of the codebase
+- Teams where multiple developers use different AI agents but need those agents to reason from the same code context
+- Long-running engineering workflows where codebase knowledge must remain available between sprints or across quarters
+- Onboarding flows where a new developer or agent needs immediate codebase understanding without manual knowledge transfer
+
+## Where It Does NOT Apply
+
+- Runtime state or session state (persistent intelligence describes code structure and behavior, not application runtime data)
+- Real-time or live execution monitoring (the Intelligence Model reflects the last ingested state, not live production behavior)
+- Version control history (persistent intelligence is about retained derived knowledge, not raw commit history)
+- Agent memory systems (persistent intelligence lives in the Intelligence Model, not in agent-level memory stores)
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| Persistent intelligence requires agents to share memory | It is the Intelligence Model that persists, not agent memory; any agent can query the same model independently |
+| Persistent intelligence means the Intelligence Model never changes | It is updated on re-ingestion; persistence means it survives between queries, not that it is immutable |
+| Persistent intelligence is just a cache | A cache stores raw data for reuse; persistent intelligence is a structured semantic model of code behavior |
+| Only one agent at a time can use the persistent Intelligence Model | The Intelligence Model is queryable by any number of agents concurrently |
+
+## Example
+
+A team uses Claude Code and Cursor in parallel. Developer A uses Claude Code and queries CoreStory's MCP endpoint for the `OrderFulfillmentService` Spec. Developer B, working simultaneously in Cursor, queries the same endpoint for the same Spec. Both agents receive identical, current knowledge derived from the last ingestion — neither agent had to re-analyze the codebase, and neither session is aware of the other. The following week, after a sprint that refactors `OrderFulfillmentService`, the team re-ingests the repository. The updated Spec reflects the new behavior. All subsequent agent sessions query the updated version. The intelligence persisted, then evolved.
+
+## Related Pages
+
+- [→ Intelligence Model](../intelligence-model)
+- [→ Codebase Analysis](../codebase-analysis)
+- [→ Agent Grounding](../agent-grounding)
+- [→ CoreStory](../corestory)
+
+---
+
+---
+title: Agent Grounding
+slug: agent-grounding
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# Agent Grounding
+
+> Agent grounding is the process of providing an AI coding agent with accurate, relevant context before it generates or modifies code. CoreStory's Specs and Intelligence Model are the primary grounding artifacts for codebase-aware agent workflows.
+
+## Definition
+
+Agent grounding is the act of supplying an AI agent with sufficient, accurate information about the system it is about to act on so that its outputs are consistent with the existing codebase's structure, behavior, and business rules. Without grounding, an agent reasons from training data alone and is likely to produce code that is syntactically valid but behaviorally inconsistent with the actual system.
+
+In the context of CoreStory, grounding is achieved by injecting Spec content into the agent's prompt — either directly (via copy-paste or file inclusion) or dynamically (via MCP tool calls or RAG retrieval). A grounded agent knows, before it writes a single line, what the component it is modifying does, what it depends on, and what rules it enforces.
+
+Grounding is not the same as instructing an agent. Instructions tell the agent what to do. Grounding gives the agent the factual context it needs to do it correctly.
+
+## Where It Applies
+
+- Before any AI agent modifies an existing function, class, or service
+- When generating new code that must integrate with existing components (the agent must know what it is integrating with)
+- During code review, refactoring, or debugging sessions where behavioral context is required
+- In test generation workflows where the agent must produce tests that match actual behavior
+
+## Where It Does NOT Apply
+
+- Greenfield development with no existing codebase to reason about (grounding requires something to ground against)
+- Grounding is not applicable when the agent is performing tasks with no code context dependency (e.g., formatting a document)
+- Fine-tuning or training model weights (grounding is an inference-time activity)
+- Configuring agent permissions or access controls (grounding is about information, not authorization)
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| Grounding is the same as giving the agent a system prompt | A system prompt contains instructions; grounding provides factual codebase context — they are distinct inputs |
+| Agents are automatically grounded when they can read files | File access gives raw source code, not structured behavioral context; grounding requires a semantic description of what the code does |
+| Grounding is only necessary for large codebases | Grounding failures occur at any codebase size when agents lack behavioral context |
+| One grounding document covers all agent tasks | Effective grounding is targeted — the agent should receive the Spec(s) for the specific component it will touch |
+
+## Example
+
+A developer asks Cursor to add a retry mechanism to `EmailDispatchService`. Without grounding, Cursor reads the function signature and infers behavior from naming conventions. With CoreStory grounding, the developer passes the `EmailDispatchService` Spec into the prompt context:
+
+```
+Spec: EmailDispatchService
+Purpose: Sends transactional emails via the SendGrid API. Implements rate limiting at 100 emails/min.
+Dependencies: SendGridClient, RateLimiterService, EmailTemplateStore
+Business rules: Emails with priority=CRITICAL bypass rate limiting. Failed sends are logged to DeadLetterQueue, not retried inline.
+```
+
+Cursor now knows that inline retries would conflict with the existing design (failures go to a dead letter queue) and that CRITICAL emails have different behavior. The grounding prevents a behavioral regression before any code is written.
+
+## Related Pages
+
+- [→ Spec](../spec)
+- [→ Intelligence Model](../intelligence-model)
+- [→ MCP (Model Context Protocol)](../mcp)
+- [→ RAG Context](../rag-context)
+- [→ Spec-Driven Development (SDD)](../sdd)
+
+---
+
+---
+title: RAG Context
+slug: rag-context
+type: definition
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# RAG Context
+
+> RAG context is the retrieved content injected into an agent's prompt via Retrieval-Augmented Generation. For CoreStory, `llms-full.txt` is the recommended RAG source — use heading-aware chunking, maximum 512 tokens per chunk, 50-token overlap.
+
+## Definition
+
+RAG context is the output of a Retrieval-Augmented Generation pipeline: chunks of relevant content selected from a corpus and inserted into an agent's prompt before the model generates a response. The retrieval step uses embedding similarity or keyword search to select the most relevant chunks for a given query.
+
+For CoreStory, the recommended RAG corpus is `llms-full.txt` — a single file containing the complete set of Specs and Intelligence Model content for a repository. RAG pipelines that consume `llms-full.txt` should apply heading-aware chunking to preserve document structure, with a maximum chunk size of 512 tokens and a 50-token overlap to maintain context continuity across adjacent chunks.
+
+RAG context is the passive counterpart to MCP. MCP is an active, agent-initiated pull at inference time. RAG embeds the corpus in advance, builds a vector index, and retrieves matching chunks when a query arrives. The agent does not call a tool — the retrieval infrastructure delivers context automatically.
+
+## Where It Applies
+
+- Agents and tools that do not support MCP but can receive injected context in a prompt
+- RAG pipelines where `llms-full.txt` is indexed and chunks are retrieved per query
+- Custom agent frameworks where the developer controls the retrieval and injection step
+- Scenarios where low-latency retrieval infrastructure (pre-built vector indices) is preferable to live MCP calls
+- Bulk ingestion of CoreStory content into third-party RAG systems (e.g., knowledge bases for Devin, Notion AI, etc.)
+
+## Where It Does NOT Apply
+
+- Real-time updates: RAG operates on a pre-built index; changes to the Intelligence Model require re-indexing before they are retrievable
+- MCP-native agents where live tool calls are preferable to pre-indexed retrieval
+- Scenarios requiring the full Intelligence Model in a single prompt (use `llms-full.txt` directly for complete context injection rather than chunked retrieval)
+- Authentication or access control (RAG is a context delivery mechanism, not a security boundary)
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| RAG context is always a complete document | RAG context is a selection of chunks; completeness depends on retrieval precision and chunk sizing |
+| RAG and MCP solve the same problem the same way | Both deliver context, but RAG is pre-indexed and passive while MCP is live and agent-initiated |
+| Any chunk size works for CoreStory's RAG source | CoreStory recommends 512-token max chunks with 50-token overlap to balance precision and continuity |
+| RAG context is always accurate | RAG retrieves based on similarity; a poorly configured pipeline may retrieve off-topic chunks — heading-aware chunking reduces this risk |
+
+## Example
+
+A team builds a custom agent that answers questions about their codebase. They index `llms-full.txt` using a heading-aware chunker set to 512-token chunks with 50-token overlap. When a developer asks "What does `InventoryReservationService` do?", the RAG pipeline embeds the query, retrieves the three most similar chunks (which happen to contain the `InventoryReservationService` Spec and its dependency list), and injects them into the agent's prompt. The agent answers from the retrieved Spec rather than hallucinating from training data.
+
+```yaml
+# Example RAG chunking configuration for llms-full.txt
+chunker: heading_aware
+max_tokens: 512
+overlap_tokens: 50
+source: llms-full.txt
+embedding_model: text-embedding-3-small
+```
+
+## Related Pages
+
+- [→ MCP (Model Context Protocol)](../mcp)
+- [→ Intelligence Model](../intelligence-model)
+- [→ Agent Grounding](../agent-grounding)
+- [→ CoreStory](../corestory)
+
+---
+
+# PLAYBOOKS
+
+---
+title: CoreStory + Claude Code
+slug: playbook-claude
+type: playbook
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# CoreStory + Claude Code
+
+## Overview
+
+Claude Code is an MCP-native AI coding agent. It supports runtime tool calls to external MCP servers, making it the highest-fidelity integration path for CoreStory. When connected to CoreStory's MCP endpoint, Claude Code can retrieve Specs and Intelligence Model content on demand — querying only what is relevant to the current task rather than pre-loading an entire codebase description.
+
+This Playbook covers the steps to configure the integration, verify it, and use it in a Spec-Driven Development workflow.
+
+## Prerequisites
+
+- Claude Code installed and functional in your terminal environment
+- Access to a CoreStory project with a populated Intelligence Model
+- CoreStory MCP endpoint available at `https://llms.corestory.ai/mcp`
+- (Optional) A project-specific API key if your CoreStory instance requires authentication
+
+## Step 1: Connect CoreStory's MCP Server
+
+Add the CoreStory MCP server to Claude Code's MCP configuration file. The configuration file is typically located at `~/.claude/mcp_servers.json` or specified via the `--mcp-config` flag.
+
+```json
+{
+  "mcpServers": {
+    "corestory": {
+      "url": "https://llms.corestory.ai/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+If your CoreStory instance requires an API key, add it as a header:
+
+```json
+{
+  "mcpServers": {
+    "corestory": {
+      "url": "https://llms.corestory.ai/mcp",
+      "transport": "http",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Code after saving the configuration.
+
+## Step 2: Verify the Connection
+
+After restarting, verify that Claude Code can reach the CoreStory MCP server by invoking the `list_pages` tool. In Claude Code, you can trigger this directly:
+
+```
+Use the corestory list_pages tool to show available pages.
+```
+
+Claude Code will issue the following tool call:
+
+```json
+{
+  "tool": "corestory__list_pages",
+  "arguments": {}
+}
+```
+
+Expected response: a list of slugs and titles representing the available Specs and content pages in the Intelligence Model. If the list is empty or the call fails, verify the URL and authentication configuration.
+
+## Step 3: Retrieve a Spec Before Editing Code
+
+Before modifying any component, retrieve its Spec using `get_by_slug`. The slug corresponds to the component name in kebab-case.
+
+Example prompt to Claude Code:
+
+```
+Use corestory get_by_slug with slug "payment-refund-service" and include the result in your context before making any changes.
+```
+
+Claude Code issues:
+
+```json
+{
+  "tool": "corestory__get_by_slug",
+  "arguments": { "slug": "payment-refund-service" }
+}
+```
+
+The returned Spec includes the component's purpose, inputs, outputs, dependencies, and business rules. Instruct Claude Code to reason from this Spec before generating or modifying code:
+
+```
+Given the following spec for PaymentRefundService, add input validation for the `amount` field. Do not change any behavior described in the spec.
+
+[paste or reference the returned spec here]
+```
+
+## Step 4: Search for Context
+
+When you do not know the exact slug, use the `search` tool to find relevant Specs by keyword or concept.
+
+```
+Use corestory search with query "rate limiting email" to find relevant specs.
+```
+
+Claude Code issues:
+
+```json
+{
+  "tool": "corestory__search",
+  "arguments": { "query": "rate limiting email" }
+}
+```
+
+The response returns matching Specs ranked by relevance. Select the most relevant result and follow Step 3 to retrieve its full content.
+
+## Step 5: Spec-Driven Development Workflow
+
+A complete Spec-Driven Development (SDD) cycle with Claude Code follows this sequence:
+
+**Task**: Add a maximum refund limit of $1,000 to `PaymentRefundService`.
+
+**1. Query the spec:**
+
+```
+Use corestory get_by_slug with slug "payment-refund-service".
+```
+
+**2. Review the returned spec:**
+
+```
+Spec: PaymentRefundService
+Purpose: Processes customer refund requests against completed orders.
+Inputs: orderId (string), amount (float, USD), requestedBy (string, user ID)
+Outputs: refundConfirmation (object: refundId, status, processedAt)
+Dependencies: OrderLedger, FraudCheckService, RefundAuditLog
+Business rules:
+  - Refunds may not exceed the original order total.
+  - Refunds above $500 require supervisor approval (FraudCheckService.requiresReview).
+  - All refunds are logged to RefundAuditLog regardless of outcome.
+```
+
+**3. Issue the coding task, grounded in the spec:**
+
+```
+Based on the PaymentRefundService spec above, add a hard limit: refunds may not exceed $1,000 regardless of order total. This check should occur before the FraudCheckService.requiresReview check. Update the spec comment in the code to reflect the new rule.
+```
+
+**4. Verify against the spec:**
+
+```
+Review the changes you made. Confirm that:
+- The $1,000 cap is enforced before the supervisor approval check.
+- The existing business rules from the spec are unchanged.
+- RefundAuditLog is still called regardless of outcome.
+```
+
+This sequence — query spec, ground the task, generate code, verify against spec — is the core SDD loop.
+
+## Best Practices
+
+- Retrieve the Spec for every component Claude Code will touch before issuing any coding instruction.
+- Include the full text of the retrieved Spec in the prompt context, not just the slug — Claude Code reasons better with the content than with a reference to it.
+- Use `search` when working in unfamiliar areas of the codebase to surface related Specs before narrowing to a specific component.
+- After re-ingestion updates the Intelligence Model, re-fetch Specs rather than relying on Specs retrieved in earlier sessions.
+- Use the `list_pages` tool at the start of a new coding session to orient Claude Code to the available Intelligence Model content.
+
+## Common Pitfalls
+
+- **Skipping Spec retrieval for "small" changes**: Even single-line changes can violate business rules that are invisible in the source code but visible in the Spec. Always retrieve the Spec first.
+- **Using a stale Spec**: If the codebase has been modified since the last CoreStory ingestion, the Spec may not reflect current behavior. Re-ingest before critical sessions.
+- **Querying with a wrong slug format**: Slugs are kebab-case (e.g., `payment-refund-service`, not `PaymentRefundService`). Use `search` or `list_pages` to confirm the correct slug if `get_by_slug` returns empty.
+
+## Related Pages
+
+- [→ MCP (Model Context Protocol)](../../definitions/mcp)
+- [→ Agent Grounding](../../definitions/agent-grounding)
+- [→ Spec](../../definitions/spec)
+- [→ Spec-Driven Development (SDD)](../../definitions/sdd)
+- [→ Playbook (definition)](../../definitions/playbook)
+
+---
+
+---
+title: CoreStory + Cursor
+slug: playbook-cursor
+type: playbook
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# CoreStory + Cursor
+
+## Overview
+
+Cursor supports MCP server connections and project-level rules files, providing two complementary integration paths for CoreStory. MCP allows Cursor's agent to query the Intelligence Model at inference time via tool calls. The `.cursorrules` file allows persistent, project-scoped instructions that can instruct Cursor to use CoreStory as its grounding source for all coding tasks in the repository.
+
+This Playbook covers both integration methods and the workflow for using them together.
+
+## Prerequisites
+
+- Cursor version 0.40 or later (MCP support is required for tool call integration)
+- Access to a CoreStory project with a populated Intelligence Model
+- CoreStory MCP endpoint available at `https://llms.corestory.ai/mcp`
+- Write access to the repository root for `.cursorrules` configuration
+
+## Step 1: Connect CoreStory's MCP Server
+
+Open Cursor's settings and navigate to **Features > MCP Servers**. Add the CoreStory MCP server configuration.
+
+Cursor stores MCP server configuration in `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` at the repository root (project-scoped). Use the project-scoped file to limit the integration to repositories with a CoreStory Intelligence Model.
+
+```json
+{
+  "mcpServers": {
+    "corestory": {
+      "url": "https://llms.corestory.ai/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+If your CoreStory instance requires authentication:
+
+```json
+{
+  "mcpServers": {
+    "corestory": {
+      "url": "https://llms.corestory.ai/mcp",
+      "transport": "http",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Restart Cursor after saving. The CoreStory server should appear in the MCP panel under **Features > MCP Servers** with a green status indicator.
+
+## Step 2: Verify the Connection
+
+In Cursor's Chat panel, invoke the `list_pages` tool to confirm the connection is active:
+
+```
+@corestory list all available pages
+```
+
+Cursor will call:
+
+```json
+{
+  "tool": "corestory__list_pages",
+  "arguments": {}
+}
+```
+
+A successful response returns a list of Spec slugs and titles. If the call fails, check the MCP configuration URL, authentication headers, and Cursor's MCP log output in the developer console.
+
+## Step 3: Retrieve a Spec Before Editing Code
+
+Before modifying a component, retrieve its Spec using the `@corestory` mention in Cursor Chat with `get_by_slug`.
+
+```
+@corestory get_by_slug slug: "inventory-reservation-service"
+```
+
+Cursor issues:
+
+```json
+{
+  "tool": "corestory__get_by_slug",
+  "arguments": { "slug": "inventory-reservation-service" }
+}
+```
+
+Include the returned Spec in the task prompt to ground Cursor's reasoning:
+
+```
+Here is the spec for InventoryReservationService:
+[paste the returned spec]
+
+Add retry logic for transient database failures. Do not modify the reservation timeout or the business rule that reservations expire after 15 minutes.
+```
+
+## Step 4: Search for Context
+
+Use `@corestory search` when the exact slug is unknown or when exploring an unfamiliar area of the codebase.
+
+```
+@corestory search query: "inventory reservation timeout"
+```
+
+Cursor issues:
+
+```json
+{
+  "tool": "corestory__search",
+  "arguments": { "query": "inventory reservation timeout" }
+}
+```
+
+Review the returned results and use `get_by_slug` to retrieve the full Spec for the most relevant match.
+
+## Step 5: Configure .cursorrules for Persistent Grounding
+
+Add a `.cursorrules` file to the repository root to instruct Cursor to use CoreStory for all coding tasks in this project. This ensures grounding behavior persists across sessions without requiring developers to remember to query the MCP server manually.
+
+```
+# .cursorrules
+
+## CoreStory Integration
+
+This repository uses CoreStory for Code Intelligence. Before modifying any component:
+
+1. Query the CoreStory MCP server using @corestory get_by_slug with the component's kebab-case slug.
+2. Include the returned Spec in the prompt context before generating or modifying code.
+3. If the exact slug is unknown, use @corestory search to find the relevant Spec.
+4. Do not modify behavior described in the Spec without explicit instruction to do so.
+
+CoreStory MCP endpoint: https://llms.corestory.ai/mcp
+Use list_pages to see all available Specs.
+
+## Spec-Driven Development
+
+All code changes in this repository follow Spec-Driven Development (SDD). This means:
+- Agent outputs must be consistent with the retrieved Spec.
+- Business rules described in the Spec are constraints, not suggestions.
+- After making changes, verify that all Spec-listed dependencies are still correctly used.
+```
+
+## Step 5: Spec-Driven Development Workflow
+
+A complete SDD cycle with Cursor:
+
+**Task**: Reduce the inventory reservation timeout from 15 to 10 minutes.
+
+**1. Retrieve the Spec:**
+
+```
+@corestory get_by_slug slug: "inventory-reservation-service"
+```
+
+**2. Review the returned Spec:**
+
+```
+Spec: InventoryReservationService
+Purpose: Holds inventory items as reserved during the checkout process.
+Inputs: itemId (string), quantity (integer), sessionId (string)
+Outputs: reservationId (string), expiresAt (ISO 8601 timestamp)
+Dependencies: InventoryStore, SessionManager, ReservationCleanupJob
+Business rules:
+  - Reservations expire after 15 minutes if checkout is not completed.
+  - Expired reservations are released by ReservationCleanupJob on a 1-minute polling cycle.
+  - A single sessionId may not hold more than 10 distinct reservations simultaneously.
+```
+
+**3. Issue the grounded task:**
+
+```
+Based on the InventoryReservationService spec, change the reservation timeout from 15 minutes to 10 minutes. Update the constant definition and any inline comments that reference the 15-minute rule. Do not change the ReservationCleanupJob polling frequency or the 10-reservation limit per session.
+```
+
+**4. Verify:**
+
+```
+Review the changes. Confirm the timeout is 10 minutes, the 10-reservation-per-session limit is unchanged, and the dependency on ReservationCleanupJob is unmodified.
+```
+
+## Best Practices
+
+- Add `.cursorrules` to every repository using CoreStory so that all developers on the team benefit from consistent grounding behavior.
+- Use project-scoped MCP configuration (`.cursor/mcp.json`) rather than global configuration to avoid activating CoreStory in repositories that have not been ingested.
+- Retrieve Specs at the start of each Cursor Chat session — do not assume a prior session's retrieved Specs are still current.
+- When working on a feature that spans multiple components, retrieve all relevant Specs before issuing any code generation task.
+- Use `@corestory search` as the first step when starting work on an unfamiliar part of the codebase.
+
+## Common Pitfalls
+
+- **MCP server not appearing in Cursor**: Verify the `mcp.json` file is valid JSON and that Cursor has been restarted since the file was saved. Check the MCP panel in Cursor settings for error messages.
+- **`.cursorrules` instructions being ignored**: Cursor applies `.cursorrules` at session start — if the file is added mid-session, restart the Chat session for the rules to take effect.
+- **Slug format mismatch**: Cursor does not auto-complete slugs. Use `list_pages` or `search` to confirm the exact kebab-case slug before calling `get_by_slug`.
+
+## Related Pages
+
+- [→ MCP (Model Context Protocol)](../../definitions/mcp)
+- [→ Agent Grounding](../../definitions/agent-grounding)
+- [→ Spec](../../definitions/spec)
+- [→ Spec-Driven Development (SDD)](../../definitions/sdd)
+- [→ Playbook (definition)](../../definitions/playbook)
+
+---
+
+---
+title: CoreStory + Devin
+slug: playbook-devin
+type: playbook
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# CoreStory + Devin
+
+## Overview
+
+Devin is an autonomous AI software engineer that executes multi-step coding tasks within a sandboxed environment. CoreStory integrates with Devin through three mechanisms: knowledge base upload (for persistent, session-available context), system prompt injection (for task-scoped grounding using `llms-full.txt`), and MCP tool use within Devin's agent loop (for precise, on-demand Spec retrieval during task execution).
+
+For most teams, the recommended primary integration is knowledge base upload supplemented by system prompt injection. MCP tool use within Devin's agent loop is available for advanced configurations where selective Spec retrieval is preferred over pre-loaded context.
+
+## Prerequisites
+
+- A Devin account with access to the Knowledge or Playbooks configuration panel
+- A CoreStory project with a populated Intelligence Model
+- The `llms-full.txt` file exported from CoreStory for the target repository
+- CoreStory MCP endpoint available at `https://llms.corestory.ai/mcp` (for MCP integration path)
+
+## Step 1: Upload llms-full.txt to Devin's Knowledge Base
+
+Devin's knowledge base allows you to upload documents that Devin can reference during any session. Upload `llms-full.txt` to give Devin persistent access to the full Intelligence Model.
+
+1. Navigate to **Settings > Knowledge** in the Devin dashboard.
+2. Click **Add Document**.
+3. Upload the `llms-full.txt` file exported from CoreStory.
+4. Set the document title to: `CoreStory Intelligence Model — [Repository Name]`
+5. Set the description to: `Machine-generated Specs and Code Intelligence for [repository name]. Use this document to ground all coding tasks before generating or modifying code.`
+
+Devin will automatically chunk and index the document. After indexing, Devin can retrieve relevant sections of the Intelligence Model when they are semantically related to the current task.
+
+For repositories with large Intelligence Models, re-export and re-upload `llms-full.txt` after each CoreStory re-ingestion to keep Devin's knowledge base current.
+
+## Step 2: Verify the Knowledge Base Integration
+
+Create a new Devin session and issue a verification task:
+
+```
+Using the CoreStory Intelligence Model document in your knowledge base, describe what [ComponentName] does, including its inputs, outputs, and any business rules.
+```
+
+Devin should return a description that matches the Spec content in `llms-full.txt`. If Devin returns a generic or hallucinated response, check that the document was indexed successfully in the Knowledge panel.
+
+## Step 3: Inject a Spec via System Prompt for Task-Scoped Grounding
+
+For tasks where precise grounding is critical, inject the relevant Spec directly into the task's system prompt rather than relying solely on knowledge base retrieval. This ensures Devin has the exact Spec in its working context for the duration of the task.
+
+When creating a Devin session or Playbook task, prepend the Spec content to the task description:
+
+```
+## Grounding Context
+
+The following Spec was retrieved from CoreStory's Intelligence Model for the component you will modify:
+
+---
+Spec: OrderFulfillmentService
+Purpose: Coordinates the end-to-end fulfillment workflow for confirmed orders, including warehouse picking, shipping label generation, and customer notification.
+Inputs: orderId (string), fulfillmentPriority (enum: STANDARD | EXPRESS | OVERNIGHT)
+Outputs: fulfillmentRecord (object: fulfillmentId, warehouseId, estimatedShipDate, trackingNumber)
+Dependencies: WarehouseAllocationService, ShippingLabelService, CustomerNotificationService, FulfillmentAuditLog
+Business rules:
+  - EXPRESS and OVERNIGHT orders must be allocated to the nearest available warehouse.
+  - STANDARD orders use the lowest-cost warehouse allocation.
+  - CustomerNotificationService must be called after every successful fulfillment, regardless of priority.
+  - All fulfillment attempts are written to FulfillmentAuditLog, including failures.
+---
+
+## Task
+
+Add support for a new fulfillmentPriority value: SAME_DAY. SAME_DAY orders follow the same warehouse allocation logic as EXPRESS. They require a 2-hour cutoff check: if the current time is after 14:00 local warehouse time, the order must be deferred to the next business day and the customer notified via CustomerNotificationService with status DEFERRED.
+```
+
+This pattern gives Devin both the behavioral contract of the existing component and the precise task description.
+
+## Step 4: Configure MCP Tool Use in Devin's Agent Loop
+
+Devin supports MCP tool connections for agents that can call external tools during task execution. To enable CoreStory MCP tool use within Devin's agent loop:
+
+1. Navigate to **Settings > Integrations > MCP Servers** in the Devin dashboard.
+2. Add the CoreStory MCP server:
+
+```json
+{
+  "name": "corestory",
+  "url": "https://llms.corestory.ai/mcp",
+  "transport": "http"
+}
+```
+
+3. If authentication is required, add the API key header in the integration settings.
+
+Once configured, Devin's agent loop can call CoreStory MCP tools during task execution. Include an instruction in the task prompt to trigger this behavior:
+
+```
+Before modifying any component, use the corestory get_by_slug tool to retrieve the relevant Spec. Use the retrieved Spec as grounding context for all code changes.
+```
+
+Devin will issue tool calls such as:
+
+```json
+{
+  "tool": "corestory__get_by_slug",
+  "arguments": { "slug": "order-fulfillment-service" }
+}
+```
+
+and incorporate the returned Spec into its reasoning before generating code.
+
+## Step 5: Spec-Driven Development Workflow
+
+A complete SDD cycle with Devin using knowledge base + system prompt injection:
+
+**Task**: Add a SAME_DAY fulfillment priority to `OrderFulfillmentService`.
+
+**1. Export the current Spec from CoreStory:**
+
+Use CoreStory's dashboard or MCP endpoint to retrieve the `order-fulfillment-service` Spec and copy its content.
+
+**2. Create a Devin session with the Spec injected:**
+
+Paste the Spec as grounding context at the top of the task (as shown in Step 3).
+
+**3. Specify the task precisely:**
+
+```
+Add SAME_DAY to the fulfillmentPriority enum. Implement the 14:00 cutoff check using the warehouse's local timezone. Deferred orders must call CustomerNotificationService with status=DEFERRED. Do not change behavior for STANDARD, EXPRESS, or OVERNIGHT priorities. All fulfillment attempts must still be written to FulfillmentAuditLog.
+```
+
+**4. Review Devin's output against the Spec:**
+
+After Devin completes the task, verify that:
+- Existing business rules for STANDARD, EXPRESS, and OVERNIGHT are unchanged.
+- FulfillmentAuditLog is called for SAME_DAY attempts (both successful and deferred).
+- CustomerNotificationService is called for all SAME_DAY outcomes.
+
+## Best Practices
+
+- Re-upload `llms-full.txt` to Devin's knowledge base after every CoreStory re-ingestion. Stale knowledge base content is a leading cause of Devin producing code inconsistent with the current codebase.
+- For critical tasks, inject the Spec directly in the system prompt rather than relying on knowledge base retrieval. Retrieval is probabilistic; direct injection is deterministic.
+- Use Devin Playbooks to encode the system prompt injection pattern as a reusable template for your team's most common coding workflows.
+- When using MCP tool use, verify in Devin's task log that `get_by_slug` was called before code generation — not after.
+- Scope each Devin session to a single component or feature boundary. Broad sessions with many components are harder to ground effectively.
+
+## Common Pitfalls
+
+- **Knowledge base document not indexed**: Devin may take several minutes to index an uploaded document. Do not start a session immediately after upload — wait for the indexing confirmation.
+- **Relying solely on knowledge base retrieval for complex tasks**: Knowledge base retrieval selects chunks by similarity; for tasks involving multiple interacting components, supplement with direct Spec injection to ensure all relevant context is present.
+- **Devin modifying behavior described in the Spec without instruction**: If Devin changes existing behavior, check whether the task description was ambiguous or conflicting with the Spec. Explicit constraints in the task prompt ("do not change X") prevent this.
+
+## Related Pages
+
+- [→ MCP (Model Context Protocol)](../../definitions/mcp)
+- [→ RAG Context](../../definitions/rag-context)
+- [→ Agent Grounding](../../definitions/agent-grounding)
+- [→ Spec](../../definitions/spec)
+- [→ Spec-Driven Development (SDD)](../../definitions/sdd)
+- [→ Playbook (definition)](../../definitions/playbook)
+
+---
+
+# COMPARISONS
+
+---
+title: CoreStory vs. Manual Documentation
+slug: vs-manual-docs
+type: comparison
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# CoreStory vs. Manual Documentation
+
+## Introduction
+
+Manual documentation refers to human-authored artifacts describing code behavior: README files, wiki pages, inline comments, architecture decision records, and design documents. CoreStory produces machine-generated Code Intelligence — structured Specs derived automatically from source code.
+
+Both approaches attempt to capture what a codebase does. They differ in source of truth, maintenance model, machine-readability, and accuracy over time. This comparison helps teams determine which approach is appropriate for a given context, and when they are complementary rather than mutually exclusive.
+
+## When to Use Each
+
+**Use CoreStory when:**
+- The primary consumer of codebase knowledge is an AI coding agent
+- The team cannot sustain the discipline of keeping documentation updated with code changes
+- The codebase is large enough that manual documentation coverage is incomplete by necessity
+- The goal is agent grounding accuracy rather than human onboarding narrative
+
+**Use manual documentation when:**
+- The content is architectural or strategic (rationale, decisions, trade-offs) that is not derivable from source code
+- The audience is human — onboarding engineers, stakeholders, or external developers
+- The content describes intent, goals, or future state rather than current code behavior
+- Regulatory or compliance requirements mandate human-authored, reviewed documentation
+
+## Comparison
+
+| Dimension | CoreStory (Machine-Generated) | Manual Documentation |
+|-----------|------------------------------|----------------------|
+| **Source of truth** | Source code (derived at ingestion time) | Human author (written at authoring time) |
+| **Maintenance** | Automatic on re-ingestion; no human authoring required | Requires human effort to create and update; decays without active maintenance |
+| **Machine-readability** | Structured Specs with defined schema; optimized for agent consumption | Unstructured or semi-structured prose; variable format across documents |
+| **Agent compatibility** | Designed for injection into agent prompts via MCP or RAG; queryable by slug | Requires manual inclusion in prompts; not queryable by default |
+| **Accuracy over time** | Reflects last ingestion state; re-ingestion updates accuracy automatically | Accuracy decays as code evolves unless authors update documentation |
+| **Setup effort** | One-time CoreStory ingestion configuration; subsequent updates are automated | High initial authoring effort; ongoing effort to maintain coverage and accuracy |
+| **Staleness risk** | Low if ingestion cadence matches development cadence | High; documentation is typically updated less frequently than code changes |
+
+## Recommendation
+
+For AI agent grounding, CoreStory's machine-generated Specs are more accurate and more maintainable than manual documentation. Manual documentation is appropriate for content that cannot be derived from source code: design rationale, architectural decisions, stakeholder-facing narratives, and future-state specifications.
+
+Teams that use both effectively treat CoreStory as the ground truth for current code behavior (what the code does) and manual documentation as the record of intent and context (why it does it). Agents should be grounded with CoreStory Specs. Human onboarding and architectural review should be supported by manual documentation.
+
+Do not use manual documentation as a substitute for CoreStory grounding in agent workflows. Manual docs become stale; CoreStory Specs are re-derived from the actual code.
+
+## Related Pages
+
+- [→ CoreStory](../definitions/corestory)
+- [→ Spec](../definitions/spec)
+- [→ Intelligence Model](../definitions/intelligence-model)
+- [→ Agent Grounding](../definitions/agent-grounding)
+- [→ SDD vs. Traditional SDLC](./sdd-vs-sdlc)
+
+---
+
+---
+title: SDD vs. Traditional SDLC
+slug: sdd-vs-sdlc
+type: comparison
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# SDD vs. Traditional SDLC
+
+## Introduction
+
+Spec-Driven Development (SDD) is a workflow in which AI coding agents operate from machine-generated Specs derived from the existing codebase, rather than from manually written requirements or documentation. Traditional Software Development Lifecycle (SDLC) workflows rely on human-authored artifacts — requirements documents, design specs, and documentation — to convey codebase context to developers and tools.
+
+As AI coding agents become primary contributors to software engineering workflows, the choice of context source for those agents has significant implications for output accuracy, onboarding speed, and documentation overhead.
+
+## When to Use Each
+
+**Use SDD when:**
+- AI coding agents are active participants in feature development, refactoring, or code review
+- The team needs agents to reason accurately about existing code behavior without manual documentation investment
+- Codebase change velocity is high enough that hand-written documentation becomes stale within a sprint
+- The team is adopting CoreStory and wants to establish an agent-first workflow
+
+**Use traditional SDLC (without SDD) when:**
+- No AI coding agents are involved in development
+- The team's documentation practices are mature and rigorously maintained
+- Regulatory requirements mandate human-authored, reviewed documentation as the authoritative context source
+- The codebase is greenfield with no Intelligence Model to derive (SDD requires existing code to analyze)
+
+## Comparison
+
+| Dimension | Spec-Driven Development (SDD) | Traditional SDLC |
+|-----------|-------------------------------|------------------|
+| **Context source for agents** | Machine-generated Specs from CoreStory's Intelligence Model, derived from source code | Human-authored requirements, design documents, and inline comments — if provided to agents at all |
+| **Documentation overhead** | Low: Specs are generated automatically; developers do not write behavioral documentation | High: Requires sustained effort to author and maintain requirements, design docs, and documentation |
+| **Onboarding speed** | Fast: agents and new developers query the Intelligence Model for immediate codebase understanding | Slower: depends on quality and completeness of existing documentation; gaps require reading source code directly |
+| **Accuracy of agent outputs** | High when Specs are current: agents are grounded in the actual behavioral contract of the code they touch | Variable: depends on whether agents receive accurate, current context; hallucination risk increases with documentation staleness |
+| **Dependency on human-written docs** | Low: behavioral context is derived from code, not authored | High: agents and developers rely on human-written docs for context; accuracy degrades as docs fall behind the codebase |
+| **Works with AI coding agents** | Designed for it: CoreStory's MCP and RAG integrations deliver Spec context directly to agent prompts | Incidental: human-authored docs can be included in prompts but are not structured for agent consumption |
+
+## Recommendation
+
+SDD does not replace traditional SDLC practices wholesale. It replaces the specific step of manually authoring and maintaining behavioral documentation for the purpose of grounding AI agents.
+
+Teams adopting AI coding agents should adopt SDD for code-level behavioral context. Traditional SDLC artifacts remain valuable for architectural decision records, product requirements (desired future state), stakeholder communication, and compliance documentation.
+
+A practical adoption path: continue authoring requirements and design documents as part of traditional SDLC for human-facing purposes. Replace or supplement manually written behavioral documentation (function-level descriptions, module READMEs) with CoreStory-generated Specs for agent consumption. The two practices coexist; they address different context needs for different audiences.
+
+## Related Pages
+
+- [→ Spec-Driven Development (SDD)](../definitions/sdd)
+- [→ Spec](../definitions/spec)
+- [→ Intelligence Model](../definitions/intelligence-model)
+- [→ Agent Grounding](../definitions/agent-grounding)
+- [→ CoreStory vs. Manual Documentation](./vs-manual-docs)
+
+---
+
+---
+title: MCP vs. RAG for Code Intelligence
+slug: mcp-vs-rag
+type: comparison
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# MCP vs. RAG for Code Intelligence
+
+## Introduction
+
+Both MCP (Model Context Protocol) and RAG (Retrieval-Augmented Generation) can deliver CoreStory's Intelligence Model to AI coding agents. The right choice depends on the agent's capabilities, the team's infrastructure, and whether selective or comprehensive retrieval is the priority.
+
+MCP is an agent-initiated, runtime pull: the agent calls a tool endpoint and retrieves exactly the Spec it needs. RAG is a pre-indexed, similarity-based retrieval: a vector index is built from `llms-full.txt` in advance, and matching chunks are injected into the agent's prompt when a query arrives.
+
+CoreStory supports both mechanisms. They are complementary, not mutually exclusive.
+
+## When to Use Each
+
+**Use MCP when:**
+- The agent natively supports MCP tool calls (e.g., Claude Code)
+- The task requires precise, targeted retrieval of a specific Spec by slug
+- Retrieval latency from a live HTTP call is acceptable in the workflow
+- The Intelligence Model is updated frequently and stale pre-indexed content is a concern
+
+**Use RAG when:**
+- The agent does not support MCP but can receive injected context in its prompt
+- A custom agent framework manages retrieval and prompt construction
+- A knowledge base or RAG infrastructure is already in place for the team
+- Bulk context delivery (multiple Specs in a single retrieval pass) is preferred over targeted slug-based lookup
+
+## Comparison
+
+| Dimension | MCP | RAG |
+|-----------|-----|-----|
+| **Retrieval mechanism** | Agent-initiated tool call to `https://llms.corestory.ai/mcp` at inference time | Pre-built vector index over `llms-full.txt`; similarity search at query time |
+| **Latency** | Adds one HTTP round-trip per tool call during inference | Index query latency (typically milliseconds); no live external call required |
+| **Agent compatibility** | Requires native MCP support in the agent (e.g., Claude Code, MCP-enabled Cursor) | Works with any agent or framework that accepts injected prompt context |
+| **Precision** | High: agent retrieves a specific Spec by exact slug, or a ranked list via search | Depends on chunk quality and embedding relevance; heading-aware chunking reduces off-target retrieval |
+| **Setup complexity** | Low for supported agents: add MCP server URL to agent configuration | Moderate: requires building and maintaining a vector index over `llms-full.txt` |
+| **CoreStory support** | Native: CoreStory exposes `get_by_slug`, `search`, and `list_pages` tools at the MCP endpoint | Native: CoreStory exports `llms-full.txt` as the recommended RAG corpus; recommended chunking is 512 tokens max, 50-token overlap |
+
+## Using Both Together
+
+MCP and RAG address different retrieval scenarios and can be used in combination within the same workflow.
+
+**Pattern: RAG for discovery, MCP for precision**
+
+Use a RAG pipeline to identify candidate Specs based on a broad semantic query, then use MCP `get_by_slug` to retrieve the full, authoritative content of each identified Spec. This is useful when the agent does not know the exact slug at the start of a task.
+
+**Pattern: RAG for agents without MCP, MCP for agents with it**
+
+In a team using multiple agents — some MCP-native, some not — maintain both integrations. Claude Code uses MCP directly. A custom pipeline feeding a non-MCP agent uses the RAG index over `llms-full.txt`. Both draw from the same source (CoreStory's Intelligence Model); only the delivery mechanism differs.
+
+**Pattern: Pre-session RAG injection + MCP refinement**
+
+At the start of a long session, inject a broad RAG selection of relevant Specs into the agent's initial context. During the session, use MCP tool calls to retrieve precise Specs for specific components as tasks narrow. This reduces the number of MCP calls while ensuring comprehensive initial grounding.
+
+When re-ingesting the repository, update both the MCP endpoint (automatic, as the Intelligence Model is refreshed) and the RAG vector index (requires re-indexing `llms-full.txt`). RAG indices do not self-update; MCP always returns current Intelligence Model content.
+
+## Related Pages
+
+- [→ MCP (Model Context Protocol)](../definitions/mcp)
+- [→ RAG Context](../definitions/rag-context)
+- [→ Intelligence Model](../definitions/intelligence-model)
+- [→ Agent Grounding](../definitions/agent-grounding)
+- [→ CoreStory + Claude Code Playbook](../playbooks/playbook-claude)
+
+---
+
+# AGENT SPEC TEMPLATES
+
+---
+title: CoreStory Agent Spec Format
+slug: agent-spec-template
+type: spec-template
+owner: Ray Ploski
+last_reviewed: 2026-03-26
+---
+
+# CoreStory Agent Spec Format
+
+## Purpose
+
+The CoreStory Agent Spec format defines standardized fields that AI coding agents use to ground their reasoning before acting on code. A Spec produced in this format provides the complete behavioral contract of a code component: what it does, what it depends on, what rules it enforces, and what constitutes correct behavior. Agents consuming a Spec in this format can generate, modify, or review code without reading source files.
+
+The format is designed to be injected into an agent's prompt directly or retrieved via the MCP endpoint using `get_by_slug`. It is machine-readable YAML. All fields are structured to support both human review and programmatic parsing by agent frameworks.
+
+## Schema
+
+```yaml
+module: string                    # The module or package containing this component
+component_name: string            # The name of the component as it appears in source
+component_type: function | class | service | route  # The structural type of the component
+description: string               # Plain-language description of what the component does
+
+file_path: string                 # Repository-relative path to the source file
+
+dependencies:
+  - string                        # List of internal or external dependencies (module or function names)
+
+inputs:
+  - name: string                  # Parameter or argument name
+    type: string                  # Data type (language-native or descriptive)
+    description: string           # What this input represents and any constraints
+
+outputs:
+  - name: string                  # Return value or output field name
+    type: string                  # Data type
+    description: string           # What this output represents
+
+preconditions:
+  - string                        # Conditions that must be true before this component is called
+
+postconditions:
+  - string                        # Conditions that will be true after this component returns successfully
+
+error_cases:
+  - condition: string             # The scenario that triggers an error
+    behavior: string              # What the component does in response (throw, return, log, etc.)
+
+business_rules:
+  - string                        # Domain rules and constraints enforced by this component
+
+examples:
+  - scenario: string              # Description of the example scenario
+    input: string                 # Representative input values (inline or YAML map)
+    expected_output: string       # Expected output for the given input
+
+last_reviewed: YYYY-MM-DD        # ISO date of last Spec review or re-generation
+generated_by: string              # Source of the Spec (e.g., "CoreStory ingestion v2.1")
+```
+
+## Filled Example
+
+The following Spec was generated by CoreStory for the `calculateShippingCost` function in a retail order management system:
+
+```yaml
+module: shipping
+component_name: calculateShippingCost
+component_type: function
+description: >
+  Calculates the total shipping cost for an order based on weight, destination zone,
+  and any active promotional codes. Applies zone-specific rate multipliers and
+  validates promotional codes against the PromotionService before applying discounts.
+
+file_path: src/shipping/cost_calculator.py
+
+dependencies:
+  - PromotionService.validateCode
+  - ZoneRateTable
+  - ShippingAuditLogger
+
+inputs:
+  - name: order_weight
+    type: float
+    description: Total weight of the order in kilograms. Must be greater than 0.
+  - name: destination_zone
+    type: enum[DOMESTIC, INTERNATIONAL]
+    description: Shipping destination zone. Determines base rate and multiplier.
+  - name: promo_code
+    type: string | null
+    description: Optional promotional code. Passed to PromotionService.validateCode for validation. Null if no code is provided.
+
+outputs:
+  - name: shipping_cost
+    type: float
+    description: Total shipping cost in USD, rounded to two decimal places. Returns 0.00 if the FREESHIP promo is valid.
+
+preconditions:
+  - order_weight must be greater than 0
+  - destination_zone must be a valid enum value (DOMESTIC or INTERNATIONAL)
+  - ZoneRateTable must be initialized and populated
+
+postconditions:
+  - Returns a non-negative float representing the shipping cost in USD
+  - All calculations are logged to ShippingAuditLogger regardless of outcome
+  - PromotionService.validateCode is called if and only if promo_code is not null
+
+error_cases:
+  - condition: order_weight is 0 or negative
+    behavior: Raises ValueError with message "order_weight must be greater than 0"
+  - condition: PromotionService.validateCode returns an error (service unavailable)
+    behavior: Logs the error to ShippingAuditLogger and proceeds without applying the discount; does not raise
+  - condition: destination_zone is not a valid enum value
+    behavior: Raises TypeError with message "destination_zone must be DOMESTIC or INTERNATIONAL"
+
+business_rules:
+  - Orders with order_weight less than 0.5 kg and destination_zone DOMESTIC receive free shipping (returns 0.00)
+  - INTERNATIONAL orders apply a 1.4x multiplier to the base DOMESTIC rate from ZoneRateTable
+  - Promotional code "FREESHIP" overrides all calculated costs and returns 0.00, regardless of zone or weight
+  - Promotional discounts are applied after zone multipliers
+  - All shipping cost calculations are logged to ShippingAuditLogger, including the inputs and the final cost
+
+examples:
+  - scenario: Lightweight domestic order with no promo code
+    input: "order_weight=0.3, destination_zone=DOMESTIC, promo_code=null"
+    expected_output: "shipping_cost=0.00 (free shipping rule applies: weight < 0.5kg, DOMESTIC)"
+  - scenario: Standard international order
+    input: "order_weight=2.5, destination_zone=INTERNATIONAL, promo_code=null"
+    expected_output: "shipping_cost=ZoneRateTable.base_rate(2.5) * 1.4, rounded to 2 decimal places"
+  - scenario: Domestic order with FREESHIP promo code
+    input: "order_weight=5.0, destination_zone=DOMESTIC, promo_code='FREESHIP'"
+    expected_output: "shipping_cost=0.00 (FREESHIP override applied)"
+
+last_reviewed: 2026-03-26
+generated_by: CoreStory ingestion v2.1
+```
+
+## How to Generate
+
+CoreStory generates Specs in this format automatically during repository ingestion. To retrieve a Spec for use in an agent prompt:
+
+**Via MCP (`get_by_slug`):**
+
+```json
+{
+  "tool": "corestory__get_by_slug",
+  "arguments": { "slug": "calculate-shipping-cost" }
+}
+```
+
+The MCP server returns the Spec as structured content. Include the returned content in the agent's prompt before issuing a coding task.
+
+**Via RAG pipeline:**
+
+Index `llms-full.txt` using a heading-aware chunker (512-token max, 50-token overlap). Query the index with the component name or a description of the task. The matching chunk will contain the Spec in the format defined above.
+
+**Via CoreStory dashboard:**
+
+Navigate to the component in the CoreStory Intelligence Model dashboard. Use the **Copy Spec** button to copy the Spec content in YAML format for manual inclusion in a prompt.
+
+Slugs follow kebab-case derived from the component name (e.g., `calculateShippingCost` → `calculate-shipping-cost`). Use `list_pages` or `search` via MCP to discover slugs when they are not known.
+
+## Where to Store
+
+Store Specs in a `/specs/` directory at the repository root, one file per component. Use the component's kebab-case name as the filename.
+
+```
+repository-root/
+  specs/
+    calculate-shipping-cost.yaml
+    order-fulfillment-service.yaml
+    payment-refund-service.yaml
+    inventory-reservation-service.yaml
+```
+
+Storing Specs in version control alongside the source code ensures:
+- Agents can load Specs directly from the repository without a live MCP call
+- Spec history is tracked alongside code history in version control
+- CI/CD pipelines can validate that Specs are updated when the components they describe are modified
+
+After re-ingestion, overwrite the existing Spec files with the updated versions generated by CoreStory.
+
+## Integration with Playbooks
+
+Each agent-specific Playbook describes how to retrieve and use Specs from this format in a specific tool's workflow:
+
+- **Claude Code**: Use `get_by_slug` via MCP before every coding task. See [CoreStory + Claude Code Playbook](../playbooks/playbook-claude).
+- **Cursor**: Use `@corestory get_by_slug` in Chat or configure `.cursorrules` to enforce Spec retrieval. See [CoreStory + Cursor Playbook](../playbooks/playbook-cursor).
+- **Devin**: Upload `llms-full.txt` to Devin's knowledge base and inject Specs into task system prompts for critical grounding. See [CoreStory + Devin Playbook](../playbooks/playbook-devin).
+
+## Related Pages
+
+- [→ Spec](../definitions/spec)
+- [→ Intelligence Model](../definitions/intelligence-model)
+- [→ Agent Grounding](../definitions/agent-grounding)
+- [→ MCP (Model Context Protocol)](../definitions/mcp)
+- [→ RAG Context](../definitions/rag-context)
+

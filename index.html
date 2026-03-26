@@ -237,7 +237,7 @@
 
     <div class="header">
       <img src="https://cdn.prod.website-files.com/68896c42739657d548061137/689b544fe406276be7fbb75a_CoreStory-Logo-Rev-Gold-RGB.svg" alt="CoreStory" style="height: 32px; margin-bottom: 1.5rem; display: block;" />
-      <div class="badge">llms.txt v1.0</div>
+      <div class="badge">llms.txt v2.0</div>
       <h1>The AI Content Layer<br>for <span>CoreStory</span></h1>
       <p class="subtitle">
         A machine-readable, LLM-optimized reference for CoreStory's Code Intelligence Platform.
@@ -258,7 +258,7 @@
         <a href="/llms-full.txt" class="file-link">
           <div>
             <div class="name">/llms-full.txt</div>
-            <div class="desc">Full context dump — all definitions, suitable for RAG chunking</div>
+            <div class="desc">Full context dump — all pages concatenated for RAG chunking</div>
           </div>
           <span class="arrow">&#8594;</span>
         </a>
@@ -267,53 +267,117 @@
 
     <div class="section">
       <div class="section-label">Content Index</div>
+
       <div class="dir-block">
-        <div class="dir-label">definitions</div>
+        <div class="dir-label">definitions — core concepts</div>
         <div class="content-list">
           <a href="/content/definitions/corestory.md" class="content-link">
-            <div class="content-link-left">
-              <span class="title">CoreStory</span>
-              <span class="slug">&nbsp;— corestory</span>
-            </div>
+            <div class="content-link-left"><span class="title">CoreStory</span><span class="slug">&nbsp;— corestory</span></div>
             <span class="arrow">&#8594;</span>
           </a>
           <a href="/content/definitions/code-intelligence.md" class="content-link">
-            <div class="content-link-left">
-              <span class="title">Code Intelligence</span>
-              <span class="slug">&nbsp;— code-intelligence</span>
-            </div>
+            <div class="content-link-left"><span class="title">Code Intelligence</span><span class="slug">&nbsp;— code-intelligence</span></div>
             <span class="arrow">&#8594;</span>
           </a>
           <a href="/content/definitions/intelligence-model.md" class="content-link">
-            <div class="content-link-left">
-              <span class="title">Intelligence Model</span>
-              <span class="slug">&nbsp;— intelligence-model</span>
-            </div>
+            <div class="content-link-left"><span class="title">Intelligence Model</span><span class="slug">&nbsp;— intelligence-model</span></div>
             <span class="arrow">&#8594;</span>
           </a>
           <a href="/content/definitions/ingestion.md" class="content-link">
-            <div class="content-link-left">
-              <span class="title">Ingestion</span>
-              <span class="slug">&nbsp;— ingestion</span>
-            </div>
+            <div class="content-link-left"><span class="title">Ingestion</span><span class="slug">&nbsp;— ingestion</span></div>
             <span class="arrow">&#8594;</span>
           </a>
           <a href="/content/definitions/spec.md" class="content-link">
-            <div class="content-link-left">
-              <span class="title">Spec</span>
-              <span class="slug">&nbsp;— spec</span>
-            </div>
+            <div class="content-link-left"><span class="title">Spec</span><span class="slug">&nbsp;— spec</span></div>
             <span class="arrow">&#8594;</span>
           </a>
           <a href="/content/definitions/sdd.md" class="content-link">
-            <div class="content-link-left">
-              <span class="title">Spec-Driven Development (SDD)</span>
-              <span class="slug">&nbsp;— sdd</span>
-            </div>
+            <div class="content-link-left"><span class="title">Spec-Driven Development (SDD)</span><span class="slug">&nbsp;— sdd</span></div>
             <span class="arrow">&#8594;</span>
           </a>
         </div>
       </div>
+
+      <div class="dir-block">
+        <div class="dir-label">definitions — integration concepts</div>
+        <div class="content-list">
+          <a href="/content/definitions/mcp.md" class="content-link">
+            <div class="content-link-left"><span class="title">MCP (Model Context Protocol)</span><span class="slug">&nbsp;— mcp</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/context-engineering.md" class="content-link">
+            <div class="content-link-left"><span class="title">Context Engineering</span><span class="slug">&nbsp;— context-engineering</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/codebase-analysis.md" class="content-link">
+            <div class="content-link-left"><span class="title">Codebase Analysis</span><span class="slug">&nbsp;— codebase-analysis</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/playbook.md" class="content-link">
+            <div class="content-link-left"><span class="title">Playbook</span><span class="slug">&nbsp;— playbook</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/persistent-intelligence.md" class="content-link">
+            <div class="content-link-left"><span class="title">Persistent Intelligence</span><span class="slug">&nbsp;— persistent-intelligence</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/agent-grounding.md" class="content-link">
+            <div class="content-link-left"><span class="title">Agent Grounding</span><span class="slug">&nbsp;— agent-grounding</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/rag-context.md" class="content-link">
+            <div class="content-link-left"><span class="title">RAG Context</span><span class="slug">&nbsp;— rag-context</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <div class="dir-label">playbooks</div>
+        <div class="content-list">
+          <a href="/content/playbooks/playbook-claude.md" class="content-link">
+            <div class="content-link-left"><span class="title">CoreStory + Claude Code</span><span class="slug">&nbsp;— playbook-claude</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/playbooks/playbook-cursor.md" class="content-link">
+            <div class="content-link-left"><span class="title">CoreStory + Cursor</span><span class="slug">&nbsp;— playbook-cursor</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/playbooks/playbook-devin.md" class="content-link">
+            <div class="content-link-left"><span class="title">CoreStory + Devin</span><span class="slug">&nbsp;— playbook-devin</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <div class="dir-label">comparisons</div>
+        <div class="content-list">
+          <a href="/content/comparisons/vs-manual-docs.md" class="content-link">
+            <div class="content-link-left"><span class="title">CoreStory vs. Manual Documentation</span><span class="slug">&nbsp;— vs-manual-docs</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/comparisons/sdd-vs-sdlc.md" class="content-link">
+            <div class="content-link-left"><span class="title">SDD vs. Traditional SDLC</span><span class="slug">&nbsp;— sdd-vs-sdlc</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/comparisons/mcp-vs-rag.md" class="content-link">
+            <div class="content-link-left"><span class="title">MCP vs. RAG for Code Intelligence</span><span class="slug">&nbsp;— mcp-vs-rag</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <div class="dir-label">agent specs</div>
+        <div class="content-list">
+          <a href="/content/agent-specs/agent-spec-template.md" class="content-link">
+            <div class="content-link-left"><span class="title">CoreStory Agent Spec Format</span><span class="slug">&nbsp;— agent-spec-template</span></div>
+            <span class="arrow">&#8594;</span>
+          </a>
+        </div>
+      </div>
+
     </div>
 
     <div class="section">
@@ -328,16 +392,12 @@
           <span>Heading-aware chunking, 512-token max</span>
         </div>
         <div class="use-case">
-          <strong>Developers</strong>
-          <span>Embed any block in your system prompt</span>
-        </div>
-        <div class="use-case">
           <strong>MCP Integration</strong>
           <span>Via <a href="https://app.corestory.ai" style="color: var(--gold); text-decoration: none;">app.corestory.ai</a></span>
         </div>
         <div class="use-case">
-          <strong>Coming April 2026</strong>
-          <span>Playbooks, comparisons, integrations</span>
+          <strong>Developers</strong>
+          <span>Embed any block in your system prompt</span>
         </div>
       </div>
     </div>
@@ -345,7 +405,7 @@
   </main>
 
   <footer>
-    <span>Version 1.0 &mdash; Updated March 2026</span>
+    <span>Version 2.0 &mdash; Updated March 2026</span>
     <a href="https://corestory.ai">corestory.ai &rarr;</a>
   </footer>
 </body>

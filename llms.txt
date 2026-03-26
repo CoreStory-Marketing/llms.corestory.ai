@@ -1,6 +1,6 @@
 # llms.corestory.ai
 > CoreStory's Dedicated AI Content Layer
-> Version: 1.0 | Last updated: 2026-03-23
+> Version: 2.0 | Last updated: 2026-03-26
 
 This site is a machine-readable, LLM-optimized reference layer for CoreStory —
 a Code Intelligence Platform that enables Spec-Driven Development (SDD).
@@ -11,7 +11,7 @@ llms.corestory.ai provides structured, atomic, embeddable context about CoreStor
 concepts for use by:
 - AI coding agents (Claude Code, Devin, Cursor, GPT)
 - RAG retrieval pipelines
-- MCP context injection
+- MCP context injection (via app.corestory.ai)
 - Developers in AI-assisted workflows
 
 It is NOT a marketing site, blog, pricing page, or announcement hub.
@@ -19,13 +19,12 @@ It is NOT a marketing site, blog, pricing page, or announcement hub.
 ## How to Use This Site
 
 ### For AI Agents
-- Query the MCP endpoint: https://llms.corestory.ai/mcp
-  - Capabilities: search, get_page, list_pages, get_by_slug
-- Fetch individual pages by slug (see index below)
 - Use llms-full.txt for full context injection
+- Fetch individual pages by slug from /content/<category>/<slug>.md
+- MCP integration is available via app.corestory.ai
 
 ### For RAG Systems
-- Chunk source: /public/llms-full.txt
+- Chunk source: /llms-full.txt
 - Recommended chunking: heading-aware, max 512 tokens, 50-token overlap
 - Metadata fields: slug, title, type, section_heading, last_reviewed
 
@@ -36,36 +35,72 @@ It is NOT a marketing site, blog, pricing page, or announcement hub.
 
 ## Page Index
 
-### Definitions — Batch 1 (P0 Core Concepts)
-- /content/definitions/corestory.md — CoreStory (what it is)
-- /content/definitions/code-intelligence.md — Code Intelligence
-- /content/definitions/intelligence-model.md — Intelligence Model
-- /content/definitions/ingestion.md — Ingestion
-- /content/definitions/spec.md — Spec
-- /content/definitions/sdd.md — Spec-Driven Development (SDD)
+### Definitions — Core Concepts
 
-### Definitions — Batch 2 (P1 Integration Concepts) [Coming April 2026]
-- /content/definitions/mcp.md — MCP (Model Context Protocol)
-- /content/definitions/context-engineering.md — Context Engineering
-- /content/definitions/codebase-analysis.md — Codebase Analysis
-- /content/definitions/playbook.md — Playbook
-- /content/definitions/persistent-intelligence.md — Persistent Intelligence
-- /content/definitions/agent-grounding.md — Agent Grounding
-- /content/definitions/rag-context.md — RAG Context
+- slug: corestory | title: CoreStory | type: definition | last_reviewed: 2026-03-23
+  /content/definitions/corestory.md — What CoreStory is: a Code Intelligence Platform
 
-### Playbooks [Coming April 2026]
-- /content/playbooks/playbook-claude.md — CoreStory + Claude Code
-- /content/playbooks/playbook-devin.md — CoreStory + Devin
-- /content/playbooks/playbook-cursor.md — CoreStory + Cursor
+- slug: code-intelligence | title: Code Intelligence | type: definition | last_reviewed: 2026-03-23
+  /content/definitions/code-intelligence.md — Structured, queryable knowledge derived from source code
 
-### Comparisons [Coming April 2026]
-- /content/comparisons/vs-manual-docs.md — CoreStory vs Manual Documentation
-- /content/comparisons/sdd-vs-sdlc.md — SDD vs Traditional SDLC
-- /content/comparisons/mcp-vs-rag.md — MCP vs RAG for Code Intelligence
+- slug: intelligence-model | title: Intelligence Model | type: definition | last_reviewed: 2026-03-23
+  /content/definitions/intelligence-model.md — The queryable store of Code Intelligence produced by CoreStory
 
-## MCP Endpoint
+- slug: ingestion | title: Ingestion | type: definition | last_reviewed: 2026-03-23
+  /content/definitions/ingestion.md — Automated pipeline that produces the Intelligence Model from source code
 
-URL: https://llms.corestory.ai/mcp
-Protocol: Model Context Protocol (MCP)
-Auth: API key (private), open read (public content)
-Capabilities: search | get_page | list_pages | get_by_slug
+- slug: spec | title: Spec | type: definition | last_reviewed: 2026-03-23
+  /content/definitions/spec.md — Machine-generated description of a code component's behavior
+
+- slug: sdd | title: Spec-Driven Development (SDD) | type: definition | last_reviewed: 2026-03-23
+  /content/definitions/sdd.md — Development methodology where agents operate from machine-generated Specs
+
+### Definitions — Integration Concepts
+
+- slug: mcp | title: MCP (Model Context Protocol) | type: definition | last_reviewed: 2026-03-26
+  /content/definitions/mcp.md — Open protocol for connecting AI agents to external context servers
+
+- slug: context-engineering | title: Context Engineering | type: definition | last_reviewed: 2026-03-26
+  /content/definitions/context-engineering.md — Discipline of delivering the right information to an agent's context window
+
+- slug: codebase-analysis | title: Codebase Analysis | type: definition | last_reviewed: 2026-03-26
+  /content/definitions/codebase-analysis.md — Pipeline phase that extracts structure and behavior from source code
+
+- slug: playbook | title: Playbook | type: definition | last_reviewed: 2026-03-26
+  /content/definitions/playbook.md — Step-by-step integration guide for using CoreStory with a specific agent
+
+- slug: persistent-intelligence | title: Persistent Intelligence | type: definition | last_reviewed: 2026-03-26
+  /content/definitions/persistent-intelligence.md — The Intelligence Model's ability to retain knowledge across sessions
+
+- slug: agent-grounding | title: Agent Grounding | type: definition | last_reviewed: 2026-03-26
+  /content/definitions/agent-grounding.md — Providing an AI agent with accurate context before it acts on code
+
+- slug: rag-context | title: RAG Context | type: definition | last_reviewed: 2026-03-26
+  /content/definitions/rag-context.md — Retrieved content injected into an agent's prompt via RAG
+
+### Playbooks
+
+- slug: playbook-claude | title: CoreStory + Claude Code | type: playbook | last_reviewed: 2026-03-26
+  /content/playbooks/playbook-claude.md — Step-by-step integration of CoreStory with Claude Code via MCP
+
+- slug: playbook-cursor | title: CoreStory + Cursor | type: playbook | last_reviewed: 2026-03-26
+  /content/playbooks/playbook-cursor.md — Step-by-step integration of CoreStory with Cursor via MCP and .cursorrules
+
+- slug: playbook-devin | title: CoreStory + Devin | type: playbook | last_reviewed: 2026-03-26
+  /content/playbooks/playbook-devin.md — Step-by-step integration of CoreStory with Devin via knowledge base and MCP
+
+### Comparisons
+
+- slug: vs-manual-docs | title: CoreStory vs. Manual Documentation | type: comparison | last_reviewed: 2026-03-26
+  /content/comparisons/vs-manual-docs.md — Why machine-generated Code Intelligence outperforms manual docs for agent workflows
+
+- slug: sdd-vs-sdlc | title: SDD vs. Traditional SDLC | type: comparison | last_reviewed: 2026-03-26
+  /content/comparisons/sdd-vs-sdlc.md — How Spec-Driven Development fits within and improves traditional development workflows
+
+- slug: mcp-vs-rag | title: MCP vs. RAG for Code Intelligence | type: comparison | last_reviewed: 2026-03-26
+  /content/comparisons/mcp-vs-rag.md — Choosing between MCP and RAG to deliver CoreStory context to agents
+
+### Agent Spec Templates
+
+- slug: agent-spec-template | title: CoreStory Agent Spec Format | type: spec-template | last_reviewed: 2026-03-26
+  /content/agent-specs/agent-spec-template.md — Reusable YAML schema for machine-generated code component specs
