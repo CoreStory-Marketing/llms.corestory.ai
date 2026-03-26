@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>llms.corestory.ai — AI Content Layer for CoreStory</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #0a0a0a;
+      color: #e4e4e7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    main {
+      max-width: 640px;
+      width: 100%;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      border-radius: 4px;
+      padding: 0.2rem 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fafafa;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    h1 span {
+      color: #a78bfa;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #a1a1aa;
+      margin-bottom: 2rem;
+    }
+
+    .files {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .file-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 1rem;
+      background: #111113;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .file-link:hover {
+      background: #18181b;
+      border-color: #a78bfa;
+    }
+
+    .file-link .name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fafafa;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    .file-link .desc {
+      font-size: 0.8rem;
+      color: #71717a;
+      margin-top: 0.15rem;
+    }
+
+    .file-link .arrow {
+      color: #52525b;
+      font-size: 1rem;
+    }
+
+    .file-link:hover .arrow {
+      color: #a78bfa;
+    }
+
+    .section {
+      margin-bottom: 0.5rem;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #52525b;
+      margin-bottom: 0.75rem;
+    }
+
+    .use-cases {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .use-case {
+      padding: 0.75rem 1rem;
+      background: #111113;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #a1a1aa;
+    }
+
+    .use-case strong {
+      display: block;
+      color: #e4e4e7;
+      font-size: 0.875rem;
+      margin-bottom: 0.2rem;
+    }
+
+    footer {
+      font-size: 0.8rem;
+      color: #3f3f46;
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    footer a {
+      color: #52525b;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: #a78bfa;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="badge">llms.txt v1.0</div>
+
+    <h1>The AI Content Layer<br>for <span>CoreStory</span></h1>
+
+    <p>
+      A machine-readable, LLM-optimized reference for CoreStory's Code Intelligence Platform.
+      Structured for AI agents, RAG pipelines, and MCP context injection — not for humans.
+    </p>
+
+    <div class="section">
+      <div class="section-label">Context Files</div>
+      <div class="files">
+        <a href="/llms.txt" class="file-link">
+          <div>
+            <div class="name">/llms.txt</div>
+            <div class="desc">Compact index — page map, usage instructions, MCP endpoint</div>
+          </div>
+          <span class="arrow">&#8594;</span>
+        </a>
+        <a href="/llms-full.txt" class="file-link">
+          <div>
+            <div class="name">/llms-full.txt</div>
+            <div class="desc">Full context dump — all definitions, suitable for RAG chunking</div>
+          </div>
+          <span class="arrow">&#8594;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Designed for</div>
+      <div class="use-cases">
+        <div class="use-case">
+          <strong>AI Coding Agents</strong>
+          Claude Code, Cursor, Devin, GPT
+        </div>
+        <div class="use-case">
+          <strong>RAG Pipelines</strong>
+          Heading-aware chunking, 512-token max
+        </div>
+        <div class="use-case">
+          <strong>MCP Injection</strong>
+          Endpoint: /mcp
+        </div>
+        <div class="use-case">
+          <strong>Developers</strong>
+          Embed any block in your system prompt
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <a href="https://corestory.ai">corestory.ai</a> &mdash; Version 1.0 &mdash; Updated March 2026
+  </footer>
+</body>
+</html>
