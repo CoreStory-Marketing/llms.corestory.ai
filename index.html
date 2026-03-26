@@ -7,21 +7,34 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --gold: #FFD83A;
+      --gold-bg: rgba(255, 216, 58, 0.08);
+      --gold-border: rgba(255, 216, 58, 0.2);
+      --bg: #0a0a0a;
+      --surface: #111113;
+      --border: #1f1f23;
+      --text: #e4e4e7;
+      --muted: #71717a;
+      --dim: #3f3f46;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: #0a0a0a;
-      color: #e4e4e7;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
+      padding: 4rem 2rem;
     }
 
     main {
-      max-width: 640px;
-      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 3rem;
     }
 
     .badge {
@@ -30,150 +43,214 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #FFD83A;
-      background: rgba(255, 216, 58, 0.1);
-      border: 1px solid rgba(255, 216, 58, 0.25);
+      color: var(--gold);
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
       border-radius: 4px;
       padding: 0.2rem 0.6rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
 
     h1 {
-      font-size: 1.75rem;
+      font-size: 2rem;
       font-weight: 700;
-      color: #fafafa;
-      line-height: 1.2;
-      margin-bottom: 1rem;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
     }
 
-    h1 span {
-      color: #FFD83A;
+    h1 span { color: var(--gold); }
+
+    .subtitle {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--muted);
     }
 
-    p {
-      font-size: 1rem;
-      line-height: 1.7;
-      color: #a1a1aa;
-      margin-bottom: 2rem;
+    /* Sections */
+    .section {
+      margin-bottom: 2.5rem;
     }
 
-    .files {
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 0.75rem;
+    }
+
+    /* File cards */
+    .file-list {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      margin-bottom: 2.5rem;
+      gap: 0.5rem;
     }
 
     .file-link {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.875rem 1rem;
-      background: #111113;
-      border: 1px solid #27272a;
-      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
       text-decoration: none;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.15s;
     }
 
     .file-link:hover {
-      background: #18181b;
-      border-color: #FFD83A;
+      border-color: var(--gold-border);
     }
 
+    .file-link:hover .arrow { color: var(--gold); }
+
     .file-link .name {
-      font-size: 0.95rem;
+      font-size: 0.875rem;
       font-weight: 600;
-      color: #fafafa;
+      color: #fff;
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     }
 
     .file-link .desc {
-      font-size: 0.8rem;
-      color: #71717a;
+      font-size: 0.775rem;
+      color: var(--muted);
       margin-top: 0.15rem;
     }
 
-    .file-link .arrow {
-      color: #52525b;
-      font-size: 1rem;
+    .arrow {
+      color: var(--dim);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-left: 1rem;
+      transition: color 0.15s;
     }
 
-    .file-link:hover .arrow {
-      color: #FFD83A;
+    /* Content index */
+    .dir-block {
+      margin-bottom: 1.25rem;
     }
 
-    .section {
+    .dir-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 0 0.5rem 0;
+      border-bottom: 1px solid var(--border);
       margin-bottom: 0.5rem;
     }
 
-    .section-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #52525b;
-      margin-bottom: 0.75rem;
+    .content-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
     }
 
+    .content-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.1s;
+    }
+
+    .content-link:hover {
+      background: var(--surface);
+    }
+
+    .content-link:hover .arrow { color: var(--gold); }
+
+    .content-link .title {
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .content-link .slug {
+      font-size: 0.75rem;
+      color: var(--dim);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      margin-left: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .content-link-left {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      min-width: 0;
+    }
+
+    /* Use cases */
     .use-cases {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.5rem;
-      margin-bottom: 2.5rem;
     }
 
     .use-case {
       padding: 0.75rem 1rem;
-      background: #111113;
-      border: 1px solid #27272a;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: #a1a1aa;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
     }
 
     .use-case strong {
       display: block;
-      color: #e4e4e7;
-      font-size: 0.875rem;
+      font-size: 0.825rem;
+      color: var(--text);
       margin-bottom: 0.2rem;
     }
 
+    .use-case span {
+      font-size: 0.775rem;
+      color: var(--muted);
+    }
+
+    /* Footer */
     footer {
-      font-size: 0.8rem;
-      color: #3f3f46;
-      text-align: center;
-      margin-top: 3rem;
+      max-width: 680px;
+      margin: 3rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.775rem;
+      color: var(--dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     footer a {
-      color: #52525b;
+      color: var(--muted);
       text-decoration: none;
     }
 
-    footer a:hover {
-      color: #FFD83A;
-    }
+    footer a:hover { color: var(--gold); }
   </style>
 </head>
 <body>
   <main>
-    <div class="badge">llms.txt v1.0</div>
 
-    <h1>The AI Content Layer<br>for <span>CoreStory</span></h1>
-
-    <p>
-      A machine-readable, LLM-optimized reference for CoreStory's Code Intelligence Platform.
-      Structured for AI agents and RAG pipelines — not for humans.
-    </p>
+    <div class="header">
+      <div class="badge">llms.txt v1.0</div>
+      <h1>The AI Content Layer<br>for <span>CoreStory</span></h1>
+      <p class="subtitle">
+        A machine-readable, LLM-optimized reference for CoreStory's Code Intelligence Platform.
+        Structured for AI agents and RAG pipelines — not for humans.
+      </p>
+    </div>
 
     <div class="section">
       <div class="section-label">Context Files</div>
-      <div class="files">
+      <div class="file-list">
         <a href="/llms.txt" class="file-link">
           <div>
             <div class="name">/llms.txt</div>
-            <div class="desc">Compact index — page map, usage instructions, MCP endpoint</div>
+            <div class="desc">Compact index — page map and usage instructions</div>
           </div>
           <span class="arrow">&#8594;</span>
         </a>
@@ -188,26 +265,83 @@
     </div>
 
     <div class="section">
+      <div class="section-label">Content Index</div>
+      <div class="dir-block">
+        <div class="dir-label">definitions</div>
+        <div class="content-list">
+          <a href="/content/definitions/corestory.md" class="content-link">
+            <div class="content-link-left">
+              <span class="title">CoreStory</span>
+              <span class="slug">&nbsp;— corestory</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/code-intelligence.md" class="content-link">
+            <div class="content-link-left">
+              <span class="title">Code Intelligence</span>
+              <span class="slug">&nbsp;— code-intelligence</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/intelligence-model.md" class="content-link">
+            <div class="content-link-left">
+              <span class="title">Intelligence Model</span>
+              <span class="slug">&nbsp;— intelligence-model</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/ingestion.md" class="content-link">
+            <div class="content-link-left">
+              <span class="title">Ingestion</span>
+              <span class="slug">&nbsp;— ingestion</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/spec.md" class="content-link">
+            <div class="content-link-left">
+              <span class="title">Spec</span>
+              <span class="slug">&nbsp;— spec</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+          </a>
+          <a href="/content/definitions/sdd.md" class="content-link">
+            <div class="content-link-left">
+              <span class="title">Spec-Driven Development (SDD)</span>
+              <span class="slug">&nbsp;— sdd</span>
+            </div>
+            <span class="arrow">&#8594;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
       <div class="section-label">Designed for</div>
       <div class="use-cases">
         <div class="use-case">
           <strong>AI Coding Agents</strong>
-          Claude Code, Cursor, Devin, GPT
+          <span>Claude Code, Cursor, Devin, GPT</span>
         </div>
         <div class="use-case">
           <strong>RAG Pipelines</strong>
-          Heading-aware chunking, 512-token max
+          <span>Heading-aware chunking, 512-token max</span>
         </div>
         <div class="use-case">
           <strong>Developers</strong>
-          Embed any block in your system prompt
+          <span>Embed any block in your system prompt</span>
+        </div>
+        <div class="use-case">
+          <strong>Coming April 2026</strong>
+          <span>Playbooks, comparisons, integrations</span>
         </div>
       </div>
     </div>
+
   </main>
 
   <footer>
-    <a href="https://corestory.ai">corestory.ai</a> &mdash; Version 1.0 &mdash; Updated March 2026
+    <span>Version 1.0 &mdash; Updated March 2026</span>
+    <a href="https://corestory.ai">corestory.ai &rarr;</a>
   </footer>
 </body>
 </html>
