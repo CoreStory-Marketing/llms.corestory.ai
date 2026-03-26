@@ -1,0 +1,247 @@
+# llms.corestory.ai — Full Content Dump
+# Version: 1.0 | Generated: 2026-03-23
+# Use this file for full-context RAG injection or prompt seeding.
+# For structured retrieval, use the MCP endpoint: https://llms.corestory.ai/mcp
+
+---
+SOURCE: /content/definitions/corestory.md
+---
+
+# CoreStory
+
+> CoreStory is a Code Intelligence Platform that ingests source code repositories and produces a queryable Intelligence Model of code structure, behavior, and business logic.
+
+## Definition
+
+CoreStory transforms source code into machine-readable, queryable intelligence. It ingests a codebase, analyzes its structure and behavior, and produces an Intelligence Model that AI agents and developers can query in natural language. This enables Spec-Driven Development (SDD): workflows where AI agents operate from machine-generated specs rather than manually written documentation.
+
+CoreStory is not a documentation tool. It is an intelligence layer that sits between code and the agents that act on it.
+
+## Where It Applies
+
+- AI coding agents (Claude Code, Devin, Cursor) that need grounded context before generating, modifying, or reviewing code
+- Engineering teams adopting Spec-Driven Development workflows
+- RAG pipelines that require structured, code-aware context
+- MCP-enabled tools that query live code intelligence at inference time
+
+## Where It Does NOT Apply
+
+- General-purpose documentation generation
+- Static analysis or linting tools
+- Test generation tools without business logic context
+- Project management or issue tracking
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| CoreStory writes documentation | CoreStory produces machine-readable specs and intelligence, not human-facing docs |
+| CoreStory is a search tool for code | CoreStory builds a structured Intelligence Model — not just indexed code search |
+| CoreStory replaces the codebase | CoreStory operates alongside the codebase as a context layer |
+| CoreStory requires manual input | Ingestion is automated — CoreStory derives intelligence directly from the repository |
+
+## Example
+
+A developer asks Claude Code to resolve a bug in a payments module. Without CoreStory, Claude Code has no context about how the payments module relates to the broader order lifecycle. With CoreStory's MCP server active, Claude Code queries the Intelligence Model and receives a spec describing the relevant functions, their dependencies, and their expected behaviors.
+
+## Related Pages
+- Code Intelligence | Intelligence Model | Spec-Driven Development (SDD) | MCP
+
+---
+SOURCE: /content/definitions/code-intelligence.md
+---
+
+# Code Intelligence
+
+> Code Intelligence is structured, queryable knowledge derived from source code — encompassing structure, behavior, dependencies, and business logic — produced by CoreStory's ingestion pipeline.
+
+## Definition
+
+Code Intelligence is the output of analyzing a source code repository to extract not just syntax, but meaning: what functions do, how components relate, what business rules are encoded, and how changes in one area affect others. It goes beyond code search or static analysis by producing a semantic model that agents and developers can query in natural language.
+
+## Where It Applies
+
+- Grounding AI coding agents before they generate or modify code
+- Answering questions about codebase behavior without reading raw source files
+- Producing Specs that represent the intended behavior of a module or feature
+- Identifying blast radius of a proposed change
+
+## Where It Does NOT Apply
+
+- Runtime monitoring or observability
+- Security vulnerability scanning
+- Code style enforcement or formatting
+- Tracking changes over time (reflects state at last ingestion)
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| Code Intelligence = code search | Code search finds text matches; Code Intelligence understands structure, behavior, and relationships |
+| Code Intelligence = embeddings | Embeddings are a retrieval mechanism; Code Intelligence is the semantic content |
+| Code Intelligence requires manual descriptions | Derived automatically from the repository |
+| Code Intelligence is real-time | Reflects the repository at last ingestion |
+
+## Related Pages
+- CoreStory | Intelligence Model | Codebase Analysis
+
+---
+SOURCE: /content/definitions/intelligence-model.md
+---
+
+# Intelligence Model
+
+> The Intelligence Model is the structured, queryable store of Code Intelligence produced by CoreStory after ingesting a repository.
+
+## Definition
+
+The Intelligence Model is CoreStory's primary output artifact. After ingestion, CoreStory stores a structured representation of the codebase — its components, their relationships, their behaviors, and the business logic they encode — in a form that supports natural language querying. It persists between coding sessions and accretes value as the codebase evolves.
+
+## Where It Applies
+
+- Serving as grounding context for AI coding agents during active sessions
+- Answering developer queries about codebase behavior and dependencies
+- Powering the MCP endpoint
+- Enabling RAG retrieval of code-aware context chunks
+
+## Where It Does NOT Apply
+
+- Executing code or running tests
+- Replacing source control or the actual codebase
+- Tracking runtime behavior or production metrics
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| The Intelligence Model is just indexed code | It is a semantic model of structure and behavior |
+| The Intelligence Model is static | Rebuilt or updated on re-ingestion |
+| The Intelligence Model = a vector store | A vector store is a storage backend; the Intelligence Model is the semantic content within it |
+
+## Related Pages
+- CoreStory | Ingestion | Persistent Intelligence | Code Intelligence
+
+---
+SOURCE: /content/definitions/ingestion.md
+---
+
+# Ingestion
+
+> Ingestion is the automated process by which CoreStory analyzes a source code repository and produces the Intelligence Model.
+
+## Definition
+
+Ingestion is the pipeline that takes a connected code repository as input, analyzes its structure, behavior, and business logic, and produces the Intelligence Model as output. It is automated and does not require manual annotation. The Intelligence Model reflects the state of the repository at the time ingestion ran. Re-ingestion is required to incorporate new changes.
+
+## Where It Applies
+
+- Initial setup: connecting a repository to CoreStory for the first time
+- Periodic refresh: re-ingesting after significant code changes
+- CI/CD integration: triggering re-ingestion automatically on merge to main
+
+## Where It Does NOT Apply
+
+- Real-time code monitoring
+- Binary files or compiled artifacts
+- Repositories with no readable source code
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| Ingestion requires manual tagging | Fully automated |
+| Ingestion produces documentation | Produces machine-readable Code Intelligence and Specs |
+| Ingestion is instantaneous | Scales with repository size |
+| You only ingest once | Re-ingestion is expected as the codebase evolves |
+
+## Related Pages
+- Intelligence Model | Code Intelligence | Codebase Analysis
+
+---
+SOURCE: /content/definitions/spec.md
+---
+
+# Spec
+
+> A Spec is a machine-generated, natural-language description of what a code component does, derived by CoreStory from the source code.
+
+## Definition
+
+A Spec is the atomic unit of Code Intelligence output. It describes what a module, function, service, or feature does: its purpose, inputs, outputs, dependencies, and business rules. Specs are produced automatically by CoreStory during ingestion. They are designed to be embedded into AI agent prompts as grounding context.
+
+A Spec describes existing code behavior — not desired future behavior. It is not authored — it is derived.
+
+## Where It Applies
+
+- Injecting context into an AI agent's prompt before code modification
+- Communicating what a function or service does without parsing source code
+- Grounding test generation with accurate behavioral expectations
+
+## Where It Does NOT Apply
+
+- Defining desired future behavior (that is a requirements document)
+- Legal or compliance documentation
+- Describing infrastructure or deployment configuration
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| Spec = requirements document | A Spec describes current code behavior; requirements describe desired future behavior |
+| Spec = formal specification document | CoreStory uses "Spec" specifically for machine-generated code behavior descriptions |
+| Specs require human approval | Derived automatically; may be reviewed but not authored |
+
+## Example
+
+```
+Purpose: Calculates shipping cost based on weight, destination zone, and promotions.
+Inputs: orderWeight (float, kg), destinationZone (enum), promoCode (string | null)
+Outputs: shippingCost (float, USD)
+Business rules: Free shipping if <0.5kg DOMESTIC. International: 1.4x multiplier. "FREESHIP" → $0.00.
+Dependencies: PromotionService.validateCode(), ZoneRateTable
+```
+
+## Related Pages
+- Spec-Driven Development (SDD) | Code Intelligence | Intelligence Model
+
+---
+SOURCE: /content/definitions/sdd.md
+---
+
+# Spec-Driven Development (SDD)
+
+> Spec-Driven Development (SDD) is a software development methodology in which AI agents and developers operate from machine-generated Specs derived from source code by CoreStory.
+
+## Definition
+
+SDD is a development workflow pattern enabled by CoreStory's Code Intelligence layer. Instead of an AI agent reading raw source files or relying on manually written documentation, the agent first retrieves a Spec for the relevant component. The Spec provides accurate behavioral context, and the agent operates from that grounding.
+
+## Where It Applies
+
+- AI-assisted code modification: agent retrieves Spec → understands behavior → makes targeted change
+- Bug investigation: agent queries Intelligence Model before hypothesizing causes
+- Test generation: agent uses Spec to generate tests matching actual behavior
+- Onboarding: queries Specs to understand a module without reading thousands of lines
+
+## Where It Does NOT Apply
+
+- Greenfield development with no existing codebase
+- Workflows where the agent has no access to CoreStory's MCP or RAG endpoint
+- Requirements definition or product planning
+
+## Common Misconceptions
+
+| Misconception | Reality |
+|---------------|---------|
+| SDD replaces agile or planning methodologies | SDD governs how AI agents work with existing code |
+| SDD requires manual spec writing | Specs are machine-generated by CoreStory |
+| SDD is only for AI agents | Human developers also benefit |
+| SDD works without CoreStory | Depends on CoreStory's Intelligence Model as the source of Specs |
+
+## Example
+
+Without SDD: Claude Code reads 40 files, misses a key dependency, produces a partial implementation.
+With SDD: Claude Code queries the MCP endpoint, receives the Spec, produces a correct implementation on the first pass.
+
+## Related Pages
+- Spec | Code Intelligence | Intelligence Model | Playbook | SDD vs Traditional SDLC
