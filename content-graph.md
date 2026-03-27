@@ -21,9 +21,9 @@ One row per page. All internal links must trace to a slug in this table.
 | `persistent-intelligence` | Persistent Intelligence | definition | P1 | 2 | TBD | ⬜ Not Started | intelligence-model, agent-grounding |
 | `agent-grounding` | Agent Grounding | definition | P1 | 2 | TBD | ⬜ Not Started | mcp, rag-context, persistent-intelligence |
 | `rag-context` | RAG Context | definition | P1 | 2 | TBD | ⬜ Not Started | context-engineering, agent-grounding |
-| `playbook-claude` | CoreStory + Claude Code Playbook | playbook | P1 | 3 | TBD | ⬜ Not Started | mcp, agent-grounding |
-| `playbook-devin` | CoreStory + Devin Playbook | playbook | P1 | 3 | TBD | ⬜ Not Started | mcp, agent-grounding |
-| `playbook-cursor` | CoreStory + Cursor Playbook | playbook | P1 | 3 | TBD | ⬜ Not Started | mcp, agent-grounding |
+| `playbook-claude` | CoreStory + Claude Code Integration Guide | integration-guide | P1 | 3 | TBD | ⬜ Not Started | mcp, agent-grounding |
+| `playbook-devin` | CoreStory + Devin Integration Guide | integration-guide | P1 | 3 | TBD | ⬜ Not Started | mcp, agent-grounding |
+| `playbook-cursor` | CoreStory + Cursor Integration Guide | integration-guide | P1 | 3 | TBD | ⬜ Not Started | mcp, agent-grounding |
 | `vs-manual-docs` | CoreStory vs Manual Documentation | comparison | P2 | 4 | TBD | ⬜ Not Started | code-intelligence, sdd |
 | `sdd-vs-sdlc` | SDD vs Traditional SDLC | comparison | P2 | 4 | TBD | ⬜ Not Started | sdd |
 | `mcp-vs-rag` | MCP vs RAG for Code Intelligence | comparison | P2 | 4 | TBD | ⬜ Not Started | mcp, rag-context |

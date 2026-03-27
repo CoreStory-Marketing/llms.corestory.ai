@@ -11,7 +11,7 @@ llms.corestory.ai provides structured, atomic, embeddable context about CoreStor
 concepts for use by:
 - AI coding agents (Claude Code, Devin, Cursor, GPT)
 - RAG retrieval pipelines
-- MCP context injection (via app.corestory.ai)
+- MCP context injection (via c2s.corestory.ai/mcp)
 - Developers in AI-assisted workflows
 
 It is NOT a marketing site, blog, pricing page, or announcement hub.
@@ -21,7 +21,7 @@ It is NOT a marketing site, blog, pricing page, or announcement hub.
 ### For AI Agents
 - Use llms-full.txt for full context injection
 - Fetch individual pages by slug from /content/<category>/<slug>.md
-- MCP integration is available via app.corestory.ai
+- MCP integration is available via c2s.corestory.ai/mcp (requires Bearer token authentication)
 
 ### For RAG Systems
 - Chunk source: /llms-full.txt
@@ -78,16 +78,16 @@ It is NOT a marketing site, blog, pricing page, or announcement hub.
 - slug: rag-context | title: RAG Context | type: definition | last_reviewed: 2026-03-26
   /content/definitions/rag-context.md — Retrieved content injected into an agent's prompt via RAG
 
-### Playbooks
+### Integration Guides
 
-- slug: playbook-claude | title: CoreStory + Claude Code | type: playbook | last_reviewed: 2026-03-26
-  /content/playbooks/playbook-claude.md — Step-by-step integration of CoreStory with Claude Code via MCP
+- slug: playbook-claude | title: CoreStory + Claude Code | type: integration-guide | last_reviewed: 2026-03-26
+  /content/playbooks/playbook-claude.md — MCP setup and usage guide for CoreStory with Claude Code
 
-- slug: playbook-cursor | title: CoreStory + Cursor | type: playbook | last_reviewed: 2026-03-26
-  /content/playbooks/playbook-cursor.md — Step-by-step integration of CoreStory with Cursor via MCP and .cursorrules
+- slug: playbook-cursor | title: CoreStory + Cursor | type: integration-guide | last_reviewed: 2026-03-26
+  /content/playbooks/playbook-cursor.md — MCP setup and usage guide for CoreStory with Cursor
 
-- slug: playbook-devin | title: CoreStory + Devin | type: playbook | last_reviewed: 2026-03-26
-  /content/playbooks/playbook-devin.md — Step-by-step integration of CoreStory with Devin via knowledge base and MCP
+- slug: playbook-devin | title: CoreStory + Devin | type: integration-guide | last_reviewed: 2026-03-26
+  /content/playbooks/playbook-devin.md — MCP setup and usage guide for CoreStory with Devin
 
 ### Comparisons
 

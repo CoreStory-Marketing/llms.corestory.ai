@@ -8,21 +8,36 @@ last_reviewed: 2026-03-26
 
 # MCP (Model Context Protocol)
 
-> MCP is an open protocol for connecting AI agents to external context servers at inference time. CoreStory exposes an MCP server at `llms.corestory.ai/mcp`, enabling agents to query the Intelligence Model live during a coding session.
+> MCP is an open protocol for connecting AI agents to external context servers at inference time. CoreStory exposes an MCP server at `c2s.corestory.ai/mcp`, enabling agents to query PRDs, Technical Specifications, and have AI-powered conversations about codebases live during a coding session.
 
 ## Definition
 
 The Model Context Protocol (MCP) is an open standard that defines how AI agents request and receive context from external servers during inference. Rather than pre-loading all context into a prompt, an MCP-enabled agent can call a tool endpoint at runtime to retrieve precisely the information it needs.
 
-CoreStory implements an MCP server at `https://llms.corestory.ai/mcp`. When an MCP-compatible agent (such as Claude Code) is configured to use this endpoint, it can call tools including `get_by_slug`, `search`, and `list_pages` to retrieve Specs and Intelligence Model content on demand.
+CoreStory implements an MCP server at `https://c2s.corestory.ai/mcp`. When an MCP-compatible agent (such as Claude Code, Cursor, or Devin) is configured to use this endpoint, it can call tools to list projects, retrieve PRDs and Technical Specifications with section filtering, and conduct AI-powered conversations grounded in the ingested codebase.
+
+The available MCP tools are:
+
+| Tool | Purpose |
+|------|---------|
+| `list_projects` | List all projects in the organization with ingestion status |
+| `get_project_prd` | Retrieve a project's Product Requirements Document (supports section filtering) |
+| `get_project_techspec` | Retrieve a project's Technical Specification (supports section filtering) |
+| `list_conversations` | List conversations for a project |
+| `get_conversation` | Retrieve conversation details and message history |
+| `create_conversation` | Start a new AI-powered conversation about a project |
+| `rename_conversation` | Rename an existing conversation |
+| `send_message` | Send a message and receive an AI response grounded in the codebase |
+
+Authentication is required. MCP tokens are generated from the CoreStory dashboard or API and use the format `mcp_{token_id}.{jwt_token}`.
 
 MCP separates the concern of context delivery from prompt construction. The agent decides what to query; the MCP server determines what to return.
 
 ## Where It Applies
 
-- AI coding agents that support MCP tool calls natively (e.g., Claude Code)
-- Inference-time retrieval of Specs and Code Intelligence without pre-loading `llms-full.txt`
-- Workflows where agents need to query different components selectively rather than receiving all context upfront
+- AI coding agents that support MCP tool calls natively (e.g., Claude Code, Cursor, VS Code with GitHub Copilot, Windsurf, Devin, Factory.ai)
+- Inference-time retrieval of PRDs, Technical Specifications, and codebase conversations without pre-loading full documents
+- Workflows where agents need to query specific specification sections selectively rather than receiving all context upfront
 - Integrations where the Intelligence Model must remain up to date and latency of a live call is acceptable
 
 ## Where It Does NOT Apply
@@ -40,19 +55,29 @@ MCP separates the concern of context delivery from prompt construction. The agen
 | MCP replaces RAG | MCP and RAG are complementary retrieval mechanisms; MCP is runtime pull, RAG is embed-and-retrieve |
 | MCP gives agents write access to the Intelligence Model | CoreStory's MCP server is read-only; ingestion is a separate pipeline |
 | Every AI tool supports MCP | MCP support varies by agent; verify compatibility before choosing MCP over RAG |
+| CoreStory's MCP server doesn't require authentication | A Bearer token is required for all tool calls; tokens are generated from the CoreStory dashboard |
 
 ## Example
 
-Claude Code is configured with CoreStory's MCP endpoint. A developer asks Claude Code to add input validation to `processPaymentRefund`. Before writing any code, Claude Code issues an MCP tool call:
+Claude Code is configured with CoreStory's MCP endpoint. A developer asks Claude Code to add input validation to a payment refund service. Before writing any code, Claude Code retrieves the relevant specification:
 
 ```json
 {
-  "tool": "get_by_slug",
-  "arguments": { "slug": "process-payment-refund" }
+  "tool": "corestory__get_project_techspec",
+  "arguments": { "project_id": 371, "sections": ["api_specifications"] }
 }
 ```
 
-The MCP server returns the Spec for `processPaymentRefund`, including its inputs, outputs, dependencies on `RefundLedger` and `FraudCheckService`, and the business rule that refunds above $500 require supervisor approval. Claude Code uses this context to generate validation logic that is consistent with the existing behavioral contract.
+The MCP server returns the Technical Specification sections covering the payment refund service, including its inputs, outputs, dependencies, and business rules. Claude Code then asks a targeted question via conversation:
+
+```json
+{
+  "tool": "corestory__send_message",
+  "arguments": { "conversation_id": "abc123", "message": "What validation rules currently exist for the refund amount field?" }
+}
+```
+
+Claude Code uses this context to generate validation logic that is consistent with the existing behavioral contract.
 
 ## Related Pages
 

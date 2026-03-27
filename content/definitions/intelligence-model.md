@@ -20,7 +20,7 @@ The Intelligence Model is distinct from the source code itself. It is also disti
 
 - Serving as the grounding context for AI coding agents during active sessions
 - Answering developer queries about codebase behavior, dependencies, and intent
-- Powering the MCP endpoint (`llms.corestory.ai/mcp`)
+- Powering the MCP endpoint (`c2s.corestory.ai/mcp`)
 - Enabling RAG retrieval of code-aware context chunks
 
 ## Where It Does NOT Apply
