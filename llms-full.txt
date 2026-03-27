@@ -1,12 +1,3 @@
-# llms.corestory.ai — Full Context Dump
-> Version: 2.0 | Last updated: 2026-03-26
-> This file contains all content pages concatenated for RAG ingestion.
-> Recommended chunking: heading-aware, max 512 tokens, 50-token overlap.
-
----
-
-# DEFINITIONS — CORE CONCEPTS
-
 ---
 title: CoreStory
 slug: corestory
@@ -58,9 +49,6 @@ A developer asks Claude Code to resolve a bug in a payments module. Without Core
 - [→ Intelligence Model](../intelligence-model)
 - [→ Spec-Driven Development (SDD)](../sdd)
 - [→ MCP (Model Context Protocol)](../mcp)
-
----
-
 ---
 title: Code Intelligence
 slug: code-intelligence
@@ -111,9 +99,6 @@ A developer queries CoreStory: "What does the `processRefund` function do and wh
 - [→ CoreStory](../corestory)
 - [→ Intelligence Model](../intelligence-model)
 - [→ Codebase Analysis](../codebase-analysis)
-
----
-
 ---
 title: Intelligence Model
 slug: intelligence-model
@@ -136,7 +121,7 @@ The Intelligence Model is distinct from the source code itself. It is also disti
 
 - Serving as the grounding context for AI coding agents during active sessions
 - Answering developer queries about codebase behavior, dependencies, and intent
-- Powering the MCP endpoint (`llms.corestory.ai/mcp`)
+- Powering the MCP endpoint (`c2s.corestory.ai/mcp`)
 - Enabling RAG retrieval of code-aware context chunks
 
 ## Where It Does NOT Apply
@@ -165,9 +150,6 @@ After CoreStory ingests a 200,000-line e-commerce platform, the Intelligence Mod
 - [→ Ingestion](../ingestion)
 - [→ Persistent Intelligence](../persistent-intelligence)
 - [→ Code Intelligence](../code-intelligence)
-
----
-
 ---
 title: Ingestion
 slug: ingestion
@@ -216,9 +198,6 @@ A team connects their Node.js API repository to CoreStory. CoreStory ingests the
 - [→ Intelligence Model](../intelligence-model)
 - [→ Code Intelligence](../code-intelligence)
 - [→ Codebase Analysis](../codebase-analysis)
-
----
-
 ---
 title: Spec
 slug: spec
@@ -279,9 +258,6 @@ An AI agent receiving this Spec before editing the function has accurate behavio
 - [→ Spec-Driven Development (SDD)](../sdd)
 - [→ Code Intelligence](../code-intelligence)
 - [→ Intelligence Model](../intelligence-model)
-
----
-
 ---
 title: Spec-Driven Development (SDD)
 slug: sdd
@@ -337,11 +313,6 @@ Claude Code queries CoreStory's MCP endpoint for the Spec on the `/api/users` ro
 - [→ Intelligence Model](../intelligence-model)
 - [→ Playbook](../playbook)
 - [→ SDD vs Traditional SDLC](../sdd-vs-sdlc)
-
----
-
-# DEFINITIONS — INTEGRATION CONCEPTS
-
 ---
 title: MCP (Model Context Protocol)
 slug: mcp
@@ -352,21 +323,36 @@ last_reviewed: 2026-03-26
 
 # MCP (Model Context Protocol)
 
-> MCP is an open protocol for connecting AI agents to external context servers at inference time. CoreStory exposes an MCP server at `llms.corestory.ai/mcp`, enabling agents to query the Intelligence Model live during a coding session.
+> MCP is an open protocol for connecting AI agents to external context servers at inference time. CoreStory exposes an MCP server at `c2s.corestory.ai/mcp`, enabling agents to query PRDs, Technical Specifications, and have AI-powered conversations about codebases live during a coding session.
 
 ## Definition
 
 The Model Context Protocol (MCP) is an open standard that defines how AI agents request and receive context from external servers during inference. Rather than pre-loading all context into a prompt, an MCP-enabled agent can call a tool endpoint at runtime to retrieve precisely the information it needs.
 
-CoreStory implements an MCP server at `https://llms.corestory.ai/mcp`. When an MCP-compatible agent (such as Claude Code) is configured to use this endpoint, it can call tools including `get_by_slug`, `search`, and `list_pages` to retrieve Specs and Intelligence Model content on demand.
+CoreStory implements an MCP server at `https://c2s.corestory.ai/mcp`. When an MCP-compatible agent (such as Claude Code, Cursor, or Devin) is configured to use this endpoint, it can call tools to list projects, retrieve PRDs and Technical Specifications with section filtering, and conduct AI-powered conversations grounded in the ingested codebase.
+
+The available MCP tools are:
+
+| Tool | Purpose |
+|------|---------|
+| `list_projects` | List all projects in the organization with ingestion status |
+| `get_project_prd` | Retrieve a project's Product Requirements Document (supports section filtering) |
+| `get_project_techspec` | Retrieve a project's Technical Specification (supports section filtering) |
+| `list_conversations` | List conversations for a project |
+| `get_conversation` | Retrieve conversation details and message history |
+| `create_conversation` | Start a new AI-powered conversation about a project |
+| `rename_conversation` | Rename an existing conversation |
+| `send_message` | Send a message and receive an AI response grounded in the codebase |
+
+Authentication is required. MCP tokens are generated from the CoreStory dashboard or API and use the format `mcp_{token_id}.{jwt_token}`.
 
 MCP separates the concern of context delivery from prompt construction. The agent decides what to query; the MCP server determines what to return.
 
 ## Where It Applies
 
-- AI coding agents that support MCP tool calls natively (e.g., Claude Code)
-- Inference-time retrieval of Specs and Code Intelligence without pre-loading `llms-full.txt`
-- Workflows where agents need to query different components selectively rather than receiving all context upfront
+- AI coding agents that support MCP tool calls natively (e.g., Claude Code, Cursor, VS Code with GitHub Copilot, Windsurf, Devin, Factory.ai)
+- Inference-time retrieval of PRDs, Technical Specifications, and codebase conversations without pre-loading full documents
+- Workflows where agents need to query specific specification sections selectively rather than receiving all context upfront
 - Integrations where the Intelligence Model must remain up to date and latency of a live call is acceptable
 
 ## Where It Does NOT Apply
@@ -384,19 +370,29 @@ MCP separates the concern of context delivery from prompt construction. The agen
 | MCP replaces RAG | MCP and RAG are complementary retrieval mechanisms; MCP is runtime pull, RAG is embed-and-retrieve |
 | MCP gives agents write access to the Intelligence Model | CoreStory's MCP server is read-only; ingestion is a separate pipeline |
 | Every AI tool supports MCP | MCP support varies by agent; verify compatibility before choosing MCP over RAG |
+| CoreStory's MCP server doesn't require authentication | A Bearer token is required for all tool calls; tokens are generated from the CoreStory dashboard |
 
 ## Example
 
-Claude Code is configured with CoreStory's MCP endpoint. A developer asks Claude Code to add input validation to `processPaymentRefund`. Before writing any code, Claude Code issues an MCP tool call:
+Claude Code is configured with CoreStory's MCP endpoint. A developer asks Claude Code to add input validation to a payment refund service. Before writing any code, Claude Code retrieves the relevant specification:
 
 ```json
 {
-  "tool": "get_by_slug",
-  "arguments": { "slug": "process-payment-refund" }
+  "tool": "corestory__get_project_techspec",
+  "arguments": { "project_id": 371, "sections": ["api_specifications"] }
 }
 ```
 
-The MCP server returns the Spec for `processPaymentRefund`, including its inputs, outputs, dependencies on `RefundLedger` and `FraudCheckService`, and the business rule that refunds above $500 require supervisor approval. Claude Code uses this context to generate validation logic that is consistent with the existing behavioral contract.
+The MCP server returns the Technical Specification sections covering the payment refund service, including its inputs, outputs, dependencies, and business rules. Claude Code then asks a targeted question via conversation:
+
+```json
+{
+  "tool": "corestory__send_message",
+  "arguments": { "conversation_id": "abc123", "message": "What validation rules currently exist for the refund amount field?" }
+}
+```
+
+Claude Code uses this context to generate validation logic that is consistent with the existing behavioral contract.
 
 ## Related Pages
 
@@ -404,9 +400,6 @@ The MCP server returns the Spec for `processPaymentRefund`, including its inputs
 - [→ Intelligence Model](../intelligence-model)
 - [→ RAG Context](../rag-context)
 - [→ Agent Grounding](../agent-grounding)
-
----
-
 ---
 title: Context Engineering
 slug: context-engineering
@@ -462,9 +455,6 @@ An engineering team builds a payment processing service. They configure CoreStor
 - [→ RAG Context](../rag-context)
 - [→ MCP (Model Context Protocol)](../mcp)
 - [→ Spec-Driven Development (SDD)](../sdd)
-
----
-
 ---
 title: Codebase Analysis
 slug: codebase-analysis
@@ -523,9 +513,6 @@ CoreStory ingests a 150,000-line Node.js API. During codebase analysis, it parse
 - [→ Intelligence Model](../intelligence-model)
 - [→ Ingestion](../ingestion)
 - [→ Spec](../spec)
-
----
-
 ---
 title: Playbook
 slug: playbook
@@ -536,60 +523,73 @@ last_reviewed: 2026-03-26
 
 # Playbook
 
-> A Playbook is a step-by-step integration guide that shows how to use CoreStory with a specific AI coding agent or tool. It is distinct from the Intelligence Model and Specs: a Playbook is prescriptive and workflow-oriented, not descriptive of code behavior.
+> A Playbook is a phased, workflow-oriented methodology for accomplishing a specific engineering goal using CoreStory's Code Intelligence. Playbooks define sequential phases with clear deliverables, human-in-the-loop gates, and agent-specific implementation guides.
 
 ## Definition
 
-A Playbook is a structured operational guide that specifies the exact steps required to integrate CoreStory into a workflow with a particular AI coding agent or development tool. Playbooks are prescriptive: they contain concrete configuration examples, tool call sequences, and workflow patterns that a developer or agent can follow directly.
+A Playbook is a structured operational methodology that specifies a multi-phase workflow for achieving a specific software engineering outcome using CoreStory. Each Playbook defines the phases to follow, the CoreStory tools to use at each phase, the deliverables expected, and the governance checkpoints where human review is required before proceeding.
 
-Playbooks are not content from the Intelligence Model. They do not describe what code does. They describe what a developer or agent should do to use CoreStory effectively — the sequence of actions, the configuration values, and the checkpoints for verifying a correct integration.
+Playbooks are workflow-oriented, not tool-oriented. A single Playbook may include implementation sections for multiple AI coding agents (Claude Code, Cursor, GitHub Copilot, Factory.ai), but the core methodology — the phases, deliverables, and decision points — is the same regardless of which agent executes it.
 
-Each Playbook is scoped to a specific agent or tool (e.g., Claude Code, Cursor, Devin) because the integration steps differ: MCP configuration syntax, rules file format, knowledge base upload mechanisms, and agent prompt patterns vary across tools.
+CoreStory's Playbook library includes:
+
+- **Spec-Driven Development**: A six-phase methodology for writing architecture-grounded specifications that produce correct implementations without rework.
+- **Code Modernization**: A six-phase framework for migrating legacy systems, with sub-playbooks for Codebase Assessment, Target Architecture, Decomposition & Sequencing, Monolith to Microservices, and Behavioral Verification.
+- **Agentic Bug Resolution**: Workflow for investigating and resolving bugs using CoreStory's codebase intelligence.
+- **Business Rules Extraction**: Methodology for identifying and cataloging business rules embedded in source code.
+- **Feature Gap Analysis**: Comparing specifications against existing implementations to identify gaps.
+- **Feature Implementation**: Implementing new features grounded in existing architecture.
+- **M&A Technical Due Diligence**: Evaluating codebases during mergers and acquisitions.
+- **Spec-Driven Test Generation**: Generating tests from specifications, with sub-playbooks for Behavioral Test Coverage and E2E Test Generation.
+- **Spec Kit Companion**: Companion workflow for working with CoreStory's Spec Kit.
+- **Using CoreStory with Jira**: Integrating CoreStory workflows with Jira project management.
+
+Playbooks are distinct from MCP integration guides. Integration guides describe how to connect a specific agent to CoreStory's MCP server (endpoint configuration, authentication, tool discovery). Playbooks describe what to do with that connection — the methodology for accomplishing engineering goals.
 
 ## Where It Applies
 
-- Onboarding a team to CoreStory with a specific agent (the Playbook provides the concrete steps)
-- Setting up a new agent integration where no prior configuration exists
-- Standardizing how a team uses CoreStory across multiple developers using the same agent
-- Troubleshooting an integration by following a reference workflow step by step
+- Modernizing a legacy codebase using a structured, phased approach with human governance gates
+- Writing specifications grounded in existing architecture before implementing features
+- Extracting business rules from a codebase for compliance, migration, or documentation purposes
+- Generating tests that verify actual behavioral contracts rather than assumed behavior
+- Conducting technical due diligence on a codebase during M&A
 
 ## Where It Does NOT Apply
 
-- Describing what a codebase component does (that is a Spec)
-- Defining how CoreStory's Intelligence Model is structured (that is Intelligence Model documentation)
-- Providing general software engineering guidance unrelated to CoreStory integration
-- Replacing agent-specific documentation from the agent's vendor (Playbooks are CoreStory-to-agent integration guides, not agent tutorials)
+- Configuring MCP server connections for a specific agent (that is an integration guide, not a Playbook)
+- Describing what a codebase component does (that is a Spec or specification)
+- Providing general software engineering guidance unrelated to CoreStory workflows
+- Replacing agent-specific documentation from the agent's vendor
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---------------|---------|
-| A Playbook is a Spec | A Spec describes code behavior; a Playbook describes integration workflow steps |
-| Playbooks are generic and apply to all agents | Each Playbook is agent-specific because configuration and capabilities differ across tools |
-| A Playbook is automatically generated from the Intelligence Model | Playbooks are authored integration guides; they are not produced by codebase analysis |
-| Following a Playbook is optional if you understand MCP | Playbooks encode validated, tool-specific integration patterns — deviating from them without equivalent knowledge risks configuration errors |
+| A Playbook is an agent setup guide | A Playbook is a phased methodology; agent setup is covered by MCP integration guides |
+| Playbooks are agent-specific | Each Playbook covers a workflow that works across multiple agents; agent-specific implementation is one section within each Playbook |
+| A Playbook is a single-step procedure | Playbooks define multi-phase workflows with deliverables and governance gates at each phase |
+| Playbooks are automatically generated from the Intelligence Model | Playbooks are authored methodologies; they are not produced by codebase analysis |
 
 ## Example
 
-The CoreStory + Claude Code Playbook specifies:
+The Code Modernization Playbook defines six phases:
 
-1. Add `https://llms.corestory.ai/mcp` to Claude Code's MCP configuration with the `corestory` server name.
-2. Verify the connection by invoking the `list_pages` tool.
-3. Before modifying a component, call `get_by_slug` with the component's slug to retrieve its Spec.
-4. Include the returned Spec in the working prompt before asking Claude Code to generate or modify code.
+1. **Readiness Assessment** — CoreStory evaluates the codebase and produces a Modernization Readiness Report.
+2. **Business Logic Capture** — CoreStory extracts a Business Rules Inventory from the codebase.
+3. **Strategy Selection** — Evaluate architectural options and produce an Architectural Decision Record.
+4. **Decomposition & Sequencing** — Map the migration into ordered work packages.
+5. **Component Execution** — Execute migration of individual components with continuous validation.
+6. **Behavioral Verification** — Prove that modernized components preserve the original business rules.
 
-This sequence is concrete, ordered, and tool-specific. A developer follows the Playbook to establish a working CoreStory + Claude Code integration without needing to understand the underlying MCP protocol or Intelligence Model schema.
+Each phase has a human-in-the-loop gate where stakeholders review deliverables before proceeding. The Playbook includes implementation guides for Claude Code, GitHub Copilot, Cursor, and Factory.ai — showing how to execute each phase with each agent.
 
 ## Related Pages
 
-- [→ CoreStory + Claude Code Playbook](../../playbooks/playbook-claude)
-- [→ CoreStory + Cursor Playbook](../../playbooks/playbook-cursor)
-- [→ CoreStory + Devin Playbook](../../playbooks/playbook-devin)
-- [→ MCP (Model Context Protocol)](../mcp)
 - [→ Spec-Driven Development (SDD)](../sdd)
-
----
-
+- [→ MCP (Model Context Protocol)](../mcp)
+- [→ CoreStory + Claude Code Integration Guide](../../playbooks/playbook-claude)
+- [→ CoreStory + Cursor Integration Guide](../../playbooks/playbook-cursor)
+- [→ CoreStory + Devin Integration Guide](../../playbooks/playbook-devin)
 ---
 title: Persistent Intelligence
 slug: persistent-intelligence
@@ -643,9 +643,6 @@ A team uses Claude Code and Cursor in parallel. Developer A uses Claude Code and
 - [→ Codebase Analysis](../codebase-analysis)
 - [→ Agent Grounding](../agent-grounding)
 - [→ CoreStory](../corestory)
-
----
-
 ---
 title: Agent Grounding
 slug: agent-grounding
@@ -709,9 +706,6 @@ Cursor now knows that inline retries would conflict with the existing design (fa
 - [→ MCP (Model Context Protocol)](../mcp)
 - [→ RAG Context](../rag-context)
 - [→ Spec-Driven Development (SDD)](../sdd)
-
----
-
 ---
 title: RAG Context
 slug: rag-context
@@ -775,15 +769,10 @@ embedding_model: text-embedding-3-small
 - [→ Intelligence Model](../intelligence-model)
 - [→ Agent Grounding](../agent-grounding)
 - [→ CoreStory](../corestory)
-
----
-
-# PLAYBOOKS
-
 ---
 title: CoreStory + Claude Code
 slug: playbook-claude
-type: playbook
+type: integration-guide
 owner: Ray Ploski
 last_reviewed: 2026-03-26
 ---
@@ -792,145 +781,111 @@ last_reviewed: 2026-03-26
 
 ## Overview
 
-Claude Code is an MCP-native AI coding agent. It supports runtime tool calls to external MCP servers, making it the highest-fidelity integration path for CoreStory. When connected to CoreStory's MCP endpoint, Claude Code can retrieve Specs and Intelligence Model content on demand — querying only what is relevant to the current task rather than pre-loading an entire codebase description.
+Claude Code is an MCP-native AI coding agent. It supports runtime tool calls to external MCP servers, making it the highest-fidelity integration path for CoreStory. When connected to CoreStory's MCP server, Claude Code can retrieve PRDs, Technical Specifications, and have AI-powered conversations about your codebase on demand — querying only what is relevant to the current task rather than pre-loading an entire codebase description.
 
 This Playbook covers the steps to configure the integration, verify it, and use it in a Spec-Driven Development workflow.
 
 ## Prerequisites
 
 - Claude Code installed and functional in your terminal environment
-- Access to a CoreStory project with a populated Intelligence Model
-- CoreStory MCP endpoint available at `https://llms.corestory.ai/mcp`
-- (Optional) A project-specific API key if your CoreStory instance requires authentication
+- An active CoreStory account with at least one ingested project
+- A CoreStory MCP token (generated from the dashboard or API)
 
-## Step 1: Connect CoreStory's MCP Server
+## Step 1: Generate an MCP Token
 
-Add the CoreStory MCP server to Claude Code's MCP configuration file. The configuration file is typically located at `~/.claude/mcp_servers.json` or specified via the `--mcp-config` flag.
+1. Navigate to **IDE Integrations** in your CoreStory dashboard settings.
+2. Enter an optional token name (e.g., "MacBook Pro — Claude Code").
+3. Click **Generate** and copy the token immediately — it will not be shown again.
+4. The token format is `mcp_{token_id}.{jwt_token}`.
 
-```json
-{
-  "mcpServers": {
-    "corestory": {
-      "url": "https://llms.corestory.ai/mcp",
-      "transport": "http"
-    }
-  }
-}
+Alternatively, generate a token via the API at `https://c2s.corestory.ai/docs`.
+
+## Step 2: Connect CoreStory's MCP Server
+
+Add the CoreStory MCP server to Claude Code using the CLI:
+
+```bash
+claude mcp add --transport http corestory https://c2s.corestory.ai/mcp \
+  --header "Authorization: Bearer mcp_YOUR_TOKEN_HERE"
 ```
 
-If your CoreStory instance requires an API key, add it as a header:
+Restart Claude Code after adding the server.
 
-```json
-{
-  "mcpServers": {
-    "corestory": {
-      "url": "https://llms.corestory.ai/mcp",
-      "transport": "http",
-      "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
-      }
-    }
-  }
-}
-```
+## Step 3: Verify the Connection
 
-Restart Claude Code after saving the configuration.
-
-## Step 2: Verify the Connection
-
-After restarting, verify that Claude Code can reach the CoreStory MCP server by invoking the `list_pages` tool. In Claude Code, you can trigger this directly:
+After restarting, verify that Claude Code can reach the CoreStory MCP server by invoking the `list_projects` tool:
 
 ```
-Use the corestory list_pages tool to show available pages.
+Use the corestory list_projects tool to show my available projects.
 ```
 
 Claude Code will issue the following tool call:
 
 ```json
 {
-  "tool": "corestory__list_pages",
+  "tool": "corestory__list_projects",
   "arguments": {}
 }
 ```
 
-Expected response: a list of slugs and titles representing the available Specs and content pages in the Intelligence Model. If the list is empty or the call fails, verify the URL and authentication configuration.
+Expected response: a list of projects in your organization with their ingestion status, including `has_prd` and `has_techspec` flags. If the call fails, verify your token and endpoint configuration.
 
-## Step 3: Retrieve a Spec Before Editing Code
+## Step 4: Retrieve a PRD or Tech Spec Before Editing Code
 
-Before modifying any component, retrieve its Spec using `get_by_slug`. The slug corresponds to the component name in kebab-case.
+Before modifying any component, retrieve the relevant specification for the project. CoreStory provides two document types: **PRDs** (product requirements with user stories) and **Technical Specifications** (architecture, API contracts, data models).
 
-Example prompt to Claude Code:
-
-```
-Use corestory get_by_slug with slug "payment-refund-service" and include the result in your context before making any changes.
-```
-
-Claude Code issues:
-
-```json
-{
-  "tool": "corestory__get_by_slug",
-  "arguments": { "slug": "payment-refund-service" }
-}
-```
-
-The returned Spec includes the component's purpose, inputs, outputs, dependencies, and business rules. Instruct Claude Code to reason from this Spec before generating or modifying code:
+First, discover available sections:
 
 ```
-Given the following spec for PaymentRefundService, add input validation for the `amount` field. Do not change any behavior described in the spec.
-
-[paste or reference the returned spec here]
+Use corestory get_project_techspec for project ID 371 with sections_only set to true.
 ```
 
-## Step 4: Search for Context
-
-When you do not know the exact slug, use the `search` tool to find relevant Specs by keyword or concept.
+Then retrieve the sections relevant to your task:
 
 ```
-Use corestory search with query "rate limiting email" to find relevant specs.
+Use corestory get_project_techspec for project ID 371 with sections set to ["api_specifications", "data_models"].
 ```
 
-Claude Code issues:
+The returned content includes detailed architectural context, business rules, and behavioral contracts that ground Claude Code's reasoning before it generates or modifies code.
 
-```json
-{
-  "tool": "corestory__search",
-  "arguments": { "query": "rate limiting email" }
-}
+## Step 5: Have a Conversation About the Codebase
+
+For exploratory questions or complex investigations, use CoreStory's conversation feature. This provides AI-powered responses grounded in the ingested codebase.
+
+```
+Use corestory create_conversation for project ID 371 with the title "Payment refund investigation".
 ```
 
-The response returns matching Specs ranked by relevance. Select the most relevant result and follow Step 3 to retrieve its full content.
+Then ask questions:
 
-## Step 5: Spec-Driven Development Workflow
+```
+Use corestory send_message to the conversation we just created, asking "What business rules govern the payment refund process, and what dependencies does it have?"
+```
+
+CoreStory's AI responds with answers grounded in the actual codebase, not generic training data.
+
+## Step 6: Spec-Driven Development Workflow
 
 A complete Spec-Driven Development (SDD) cycle with Claude Code follows this sequence:
 
-**Task**: Add a maximum refund limit of $1,000 to `PaymentRefundService`.
+**Task**: Add a maximum refund limit of $1,000 to the payment refund service.
 
-**1. Query the spec:**
-
-```
-Use corestory get_by_slug with slug "payment-refund-service".
-```
-
-**2. Review the returned spec:**
+**1. Retrieve the relevant specification:**
 
 ```
-Spec: PaymentRefundService
-Purpose: Processes customer refund requests against completed orders.
-Inputs: orderId (string), amount (float, USD), requestedBy (string, user ID)
-Outputs: refundConfirmation (object: refundId, status, processedAt)
-Dependencies: OrderLedger, FraudCheckService, RefundAuditLog
-Business rules:
-  - Refunds may not exceed the original order total.
-  - Refunds above $500 require supervisor approval (FraudCheckService.requiresReview).
-  - All refunds are logged to RefundAuditLog regardless of outcome.
+Use corestory get_project_techspec for project 371, sections ["api_specifications"].
+```
+
+**2. Ask CoreStory about the specific component:**
+
+```
+Use corestory send_message asking "What are the business rules and dependencies for the payment refund service?"
 ```
 
 **3. Issue the coding task, grounded in the spec:**
 
 ```
-Based on the PaymentRefundService spec above, add a hard limit: refunds may not exceed $1,000 regardless of order total. This check should occur before the FraudCheckService.requiresReview check. Update the spec comment in the code to reflect the new rule.
+Based on the CoreStory specification above, add a hard limit: refunds may not exceed $1,000 regardless of order total. This check should occur before the supervisor approval check.
 ```
 
 **4. Verify against the spec:**
@@ -939,24 +894,25 @@ Based on the PaymentRefundService spec above, add a hard limit: refunds may not 
 Review the changes you made. Confirm that:
 - The $1,000 cap is enforced before the supervisor approval check.
 - The existing business rules from the spec are unchanged.
-- RefundAuditLog is still called regardless of outcome.
+- Audit logging is still called regardless of outcome.
 ```
 
-This sequence — query spec, ground the task, generate code, verify against spec — is the core SDD loop.
+This sequence — retrieve spec, ground the task, generate code, verify against spec — is the core SDD loop.
 
 ## Best Practices
 
-- Retrieve the Spec for every component Claude Code will touch before issuing any coding instruction.
-- Include the full text of the retrieved Spec in the prompt context, not just the slug — Claude Code reasons better with the content than with a reference to it.
-- Use `search` when working in unfamiliar areas of the codebase to surface related Specs before narrowing to a specific component.
-- After re-ingestion updates the Intelligence Model, re-fetch Specs rather than relying on Specs retrieved in earlier sessions.
-- Use the `list_pages` tool at the start of a new coding session to orient Claude Code to the available Intelligence Model content.
+- Retrieve the relevant PRD or Tech Spec sections for every component Claude Code will touch before issuing any coding instruction.
+- Use `sections_only: true` first to discover available sections, then request only the sections you need — this keeps context focused and avoids overloading the prompt.
+- Use CoreStory conversations for exploratory questions when you need to understand how components interact before deciding what to change.
+- After re-ingestion updates the Intelligence Model, re-fetch specs rather than relying on specs retrieved in earlier sessions.
+- Use `list_projects` at the start of a new coding session to orient Claude Code to the available projects and their ingestion status.
+- Use a separate MCP token for each device so you can revoke access individually if needed.
 
 ## Common Pitfalls
 
-- **Skipping Spec retrieval for "small" changes**: Even single-line changes can violate business rules that are invisible in the source code but visible in the Spec. Always retrieve the Spec first.
-- **Using a stale Spec**: If the codebase has been modified since the last CoreStory ingestion, the Spec may not reflect current behavior. Re-ingest before critical sessions.
-- **Querying with a wrong slug format**: Slugs are kebab-case (e.g., `payment-refund-service`, not `PaymentRefundService`). Use `search` or `list_pages` to confirm the correct slug if `get_by_slug` returns empty.
+- **Skipping spec retrieval for "small" changes**: Even single-line changes can violate business rules that are invisible in the source code but visible in the specification. Always retrieve context first.
+- **Using a stale spec**: If the codebase has been modified since the last CoreStory ingestion, the spec may not reflect current behavior. Re-ingest before critical sessions.
+- **Forgetting to authenticate**: Unlike some MCP servers, CoreStory requires a Bearer token. If tool calls return authentication errors, verify your token is valid and not expired.
 
 ## Related Pages
 
@@ -965,13 +921,10 @@ This sequence — query spec, ground the task, generate code, verify against spe
 - [→ Spec](../../definitions/spec)
 - [→ Spec-Driven Development (SDD)](../../definitions/sdd)
 - [→ Playbook (definition)](../../definitions/playbook)
-
----
-
 ---
 title: CoreStory + Cursor
 slug: playbook-cursor
-type: playbook
+type: integration-guide
 owner: Ray Ploski
 last_reviewed: 2026-03-26
 ---
@@ -980,20 +933,27 @@ last_reviewed: 2026-03-26
 
 ## Overview
 
-Cursor supports MCP server connections and project-level rules files, providing two complementary integration paths for CoreStory. MCP allows Cursor's agent to query the Intelligence Model at inference time via tool calls. The `.cursorrules` file allows persistent, project-scoped instructions that can instruct Cursor to use CoreStory as its grounding source for all coding tasks in the repository.
+Cursor supports MCP server connections and project-level rules files, providing two complementary integration paths for CoreStory. MCP allows Cursor's agent to query PRDs, Technical Specifications, and have AI-powered conversations about the codebase at inference time via tool calls. The `.cursorrules` file allows persistent, project-scoped instructions that can instruct Cursor to use CoreStory as its grounding source for all coding tasks in the repository.
 
 This Playbook covers both integration methods and the workflow for using them together.
 
 ## Prerequisites
 
 - Cursor version 0.40 or later (MCP support is required for tool call integration)
-- Access to a CoreStory project with a populated Intelligence Model
-- CoreStory MCP endpoint available at `https://llms.corestory.ai/mcp`
+- An active CoreStory account with at least one ingested project
+- A CoreStory MCP token (generated from the dashboard or API)
 - Write access to the repository root for `.cursorrules` configuration
 
-## Step 1: Connect CoreStory's MCP Server
+## Step 1: Generate an MCP Token
 
-Open Cursor's settings and navigate to **Features > MCP Servers**. Add the CoreStory MCP server configuration.
+1. Navigate to **IDE Integrations** in your CoreStory dashboard settings.
+2. Enter an optional token name (e.g., "Cursor — Work Laptop").
+3. Click **Generate** and copy the token immediately — it will not be shown again.
+4. The token format is `mcp_{token_id}.{jwt_token}`.
+
+## Step 2: Connect CoreStory's MCP Server
+
+Open Cursor's settings and navigate to **Tools & MCP**. Add the CoreStory MCP server configuration.
 
 Cursor stores MCP server configuration in `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` at the repository root (project-scoped). Use the project-scoped file to limit the integration to repositories with a CoreStory Intelligence Model.
 
@@ -1001,94 +961,61 @@ Cursor stores MCP server configuration in `~/.cursor/mcp.json` (global) or `.cur
 {
   "mcpServers": {
     "corestory": {
-      "url": "https://llms.corestory.ai/mcp",
-      "transport": "http"
-    }
-  }
-}
-```
-
-If your CoreStory instance requires authentication:
-
-```json
-{
-  "mcpServers": {
-    "corestory": {
-      "url": "https://llms.corestory.ai/mcp",
-      "transport": "http",
+      "url": "https://c2s.corestory.ai/mcp",
+      "type": "http",
       "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
+        "Authorization": "Bearer mcp_YOUR_TOKEN_HERE"
       }
     }
   }
 }
 ```
 
-Restart Cursor after saving. The CoreStory server should appear in the MCP panel under **Features > MCP Servers** with a green status indicator.
+Restart Cursor after saving. The CoreStory server should appear in the MCP panel with a green status indicator.
 
-## Step 2: Verify the Connection
+## Step 3: Verify the Connection
 
-In Cursor's Chat panel, invoke the `list_pages` tool to confirm the connection is active:
+In Cursor's Chat panel, invoke the `list_projects` tool to confirm the connection is active:
 
 ```
-@corestory list all available pages
+@corestory list all available projects
 ```
 
 Cursor will call:
 
 ```json
 {
-  "tool": "corestory__list_pages",
+  "tool": "corestory__list_projects",
   "arguments": {}
 }
 ```
 
-A successful response returns a list of Spec slugs and titles. If the call fails, check the MCP configuration URL, authentication headers, and Cursor's MCP log output in the developer console.
+A successful response returns a list of projects with their ingestion status and document availability flags (`has_prd`, `has_techspec`). If the call fails, check the MCP configuration URL, authentication headers, and Cursor's MCP log output in the developer console.
 
-## Step 3: Retrieve a Spec Before Editing Code
+## Step 4: Retrieve a Spec Before Editing Code
 
-Before modifying a component, retrieve its Spec using the `@corestory` mention in Cursor Chat with `get_by_slug`.
+Before modifying a component, retrieve the relevant specification using `@corestory` in Cursor Chat.
 
-```
-@corestory get_by_slug slug: "inventory-reservation-service"
-```
-
-Cursor issues:
-
-```json
-{
-  "tool": "corestory__get_by_slug",
-  "arguments": { "slug": "inventory-reservation-service" }
-}
-```
-
-Include the returned Spec in the task prompt to ground Cursor's reasoning:
+First, discover available sections:
 
 ```
-Here is the spec for InventoryReservationService:
+@corestory get the tech spec for project 371, sections only
+```
+
+Then retrieve the relevant sections:
+
+```
+@corestory get the tech spec for project 371, sections: api_specifications, data_models
+```
+
+Include the returned specification in the task prompt to ground Cursor's reasoning:
+
+```
+Here is the tech spec for the inventory module:
 [paste the returned spec]
 
 Add retry logic for transient database failures. Do not modify the reservation timeout or the business rule that reservations expire after 15 minutes.
 ```
-
-## Step 4: Search for Context
-
-Use `@corestory search` when the exact slug is unknown or when exploring an unfamiliar area of the codebase.
-
-```
-@corestory search query: "inventory reservation timeout"
-```
-
-Cursor issues:
-
-```json
-{
-  "tool": "corestory__search",
-  "arguments": { "query": "inventory reservation timeout" }
-}
-```
-
-Review the returned results and use `get_by_slug` to retrieve the full Spec for the most relevant match.
 
 ## Step 5: Configure .cursorrules for Persistent Grounding
 
@@ -1101,73 +1028,65 @@ Add a `.cursorrules` file to the repository root to instruct Cursor to use CoreS
 
 This repository uses CoreStory for Code Intelligence. Before modifying any component:
 
-1. Query the CoreStory MCP server using @corestory get_by_slug with the component's kebab-case slug.
-2. Include the returned Spec in the prompt context before generating or modifying code.
-3. If the exact slug is unknown, use @corestory search to find the relevant Spec.
-4. Do not modify behavior described in the Spec without explicit instruction to do so.
+1. Query the CoreStory MCP server using @corestory list_projects to identify the relevant project.
+2. Use @corestory get_project_techspec or get_project_prd with section filtering to retrieve context for the component you will modify.
+3. For exploratory questions, use @corestory create_conversation and send_message to investigate the codebase.
+4. Do not modify behavior described in the specification without explicit instruction to do so.
 
-CoreStory MCP endpoint: https://llms.corestory.ai/mcp
-Use list_pages to see all available Specs.
+CoreStory MCP endpoint: https://c2s.corestory.ai/mcp
+Available tools: list_projects, get_project_prd, get_project_techspec, list_conversations, get_conversation, create_conversation, rename_conversation, send_message
 
 ## Spec-Driven Development
 
 All code changes in this repository follow Spec-Driven Development (SDD). This means:
-- Agent outputs must be consistent with the retrieved Spec.
-- Business rules described in the Spec are constraints, not suggestions.
-- After making changes, verify that all Spec-listed dependencies are still correctly used.
+- Agent outputs must be consistent with the retrieved specification.
+- Business rules described in the spec are constraints, not suggestions.
+- After making changes, verify that all spec-listed dependencies are still correctly used.
 ```
 
-## Step 5: Spec-Driven Development Workflow
+## Step 6: Spec-Driven Development Workflow
 
 A complete SDD cycle with Cursor:
 
 **Task**: Reduce the inventory reservation timeout from 15 to 10 minutes.
 
-**1. Retrieve the Spec:**
+**1. Retrieve the specification:**
 
 ```
-@corestory get_by_slug slug: "inventory-reservation-service"
+@corestory get the tech spec for project 371, sections: api_specifications
 ```
 
-**2. Review the returned Spec:**
+**2. Ask CoreStory about the component:**
 
 ```
-Spec: InventoryReservationService
-Purpose: Holds inventory items as reserved during the checkout process.
-Inputs: itemId (string), quantity (integer), sessionId (string)
-Outputs: reservationId (string), expiresAt (ISO 8601 timestamp)
-Dependencies: InventoryStore, SessionManager, ReservationCleanupJob
-Business rules:
-  - Reservations expire after 15 minutes if checkout is not completed.
-  - Expired reservations are released by ReservationCleanupJob on a 1-minute polling cycle.
-  - A single sessionId may not hold more than 10 distinct reservations simultaneously.
+@corestory send a message to conversation asking "What are the business rules and dependencies for the inventory reservation service?"
 ```
 
 **3. Issue the grounded task:**
 
 ```
-Based on the InventoryReservationService spec, change the reservation timeout from 15 minutes to 10 minutes. Update the constant definition and any inline comments that reference the 15-minute rule. Do not change the ReservationCleanupJob polling frequency or the 10-reservation limit per session.
+Based on the CoreStory specification, change the reservation timeout from 15 minutes to 10 minutes. Update the constant definition and any inline comments that reference the 15-minute rule. Do not change the cleanup job polling frequency or the reservation limit per session.
 ```
 
 **4. Verify:**
 
 ```
-Review the changes. Confirm the timeout is 10 minutes, the 10-reservation-per-session limit is unchanged, and the dependency on ReservationCleanupJob is unmodified.
+Review the changes. Confirm the timeout is 10 minutes, existing business rules are unchanged, and all dependencies are unmodified.
 ```
 
 ## Best Practices
 
 - Add `.cursorrules` to every repository using CoreStory so that all developers on the team benefit from consistent grounding behavior.
 - Use project-scoped MCP configuration (`.cursor/mcp.json`) rather than global configuration to avoid activating CoreStory in repositories that have not been ingested.
-- Retrieve Specs at the start of each Cursor Chat session — do not assume a prior session's retrieved Specs are still current.
-- When working on a feature that spans multiple components, retrieve all relevant Specs before issuing any code generation task.
-- Use `@corestory search` as the first step when starting work on an unfamiliar part of the codebase.
+- Use `sections_only: true` to discover available sections before fetching content — this avoids pulling oversized documents into the context window.
+- Retrieve specs at the start of each Cursor Chat session — do not assume a prior session's retrieved specs are still current.
+- When working on a feature that spans multiple components, retrieve all relevant spec sections before issuing any code generation task.
 
 ## Common Pitfalls
 
 - **MCP server not appearing in Cursor**: Verify the `mcp.json` file is valid JSON and that Cursor has been restarted since the file was saved. Check the MCP panel in Cursor settings for error messages.
 - **`.cursorrules` instructions being ignored**: Cursor applies `.cursorrules` at session start — if the file is added mid-session, restart the Chat session for the rules to take effect.
-- **Slug format mismatch**: Cursor does not auto-complete slugs. Use `list_pages` or `search` to confirm the exact kebab-case slug before calling `get_by_slug`.
+- **Authentication errors**: CoreStory requires a valid Bearer token. If tool calls fail, verify your token is not expired and is correctly formatted in the `headers` block.
 
 ## Related Pages
 
@@ -1176,13 +1095,10 @@ Review the changes. Confirm the timeout is 10 minutes, the 10-reservation-per-se
 - [→ Spec](../../definitions/spec)
 - [→ Spec-Driven Development (SDD)](../../definitions/sdd)
 - [→ Playbook (definition)](../../definitions/playbook)
-
----
-
 ---
 title: CoreStory + Devin
 slug: playbook-devin
-type: playbook
+type: integration-guide
 owner: Ray Ploski
 last_reviewed: 2026-03-26
 ---
@@ -1191,57 +1107,53 @@ last_reviewed: 2026-03-26
 
 ## Overview
 
-Devin is an autonomous AI software engineer that executes multi-step coding tasks within a sandboxed environment. CoreStory integrates with Devin through three mechanisms: knowledge base upload (for persistent, session-available context), system prompt injection (for task-scoped grounding using `llms-full.txt`), and MCP tool use within Devin's agent loop (for precise, on-demand Spec retrieval during task execution).
+Devin is an autonomous AI software engineer that executes multi-step coding tasks within a sandboxed environment. CoreStory integrates with Devin through three mechanisms: knowledge base upload (for persistent, session-available context), system prompt injection (for task-scoped grounding), and MCP tool use within Devin's agent loop (for on-demand retrieval of PRDs, Technical Specifications, and AI-powered conversation during task execution).
 
-For most teams, the recommended primary integration is knowledge base upload supplemented by system prompt injection. MCP tool use within Devin's agent loop is available for advanced configurations where selective Spec retrieval is preferred over pre-loaded context.
+For most teams, the recommended primary integration is knowledge base upload supplemented by system prompt injection. MCP tool use within Devin's agent loop is available for advanced configurations where selective spec retrieval is preferred over pre-loaded context.
 
 ## Prerequisites
 
 - A Devin account with access to the Knowledge or Playbooks configuration panel
-- A CoreStory project with a populated Intelligence Model
-- The `llms-full.txt` file exported from CoreStory for the target repository
-- CoreStory MCP endpoint available at `https://llms.corestory.ai/mcp` (for MCP integration path)
+- An active CoreStory account with at least one ingested project
+- A CoreStory MCP token (generated from the dashboard or API)
+- The `llms-full.txt` file from llms.corestory.ai (for knowledge base upload path)
 
 ## Step 1: Upload llms-full.txt to Devin's Knowledge Base
 
-Devin's knowledge base allows you to upload documents that Devin can reference during any session. Upload `llms-full.txt` to give Devin persistent access to the full Intelligence Model.
+Devin's knowledge base allows you to upload documents that Devin can reference during any session. Upload `llms-full.txt` to give Devin persistent access to CoreStory conceptual context.
 
 1. Navigate to **Settings > Knowledge** in the Devin dashboard.
 2. Click **Add Document**.
-3. Upload the `llms-full.txt` file exported from CoreStory.
+3. Upload the `llms-full.txt` file from llms.corestory.ai.
 4. Set the document title to: `CoreStory Intelligence Model — [Repository Name]`
-5. Set the description to: `Machine-generated Specs and Code Intelligence for [repository name]. Use this document to ground all coding tasks before generating or modifying code.`
+5. Set the description to: `CoreStory Code Intelligence reference. Use this document to understand CoreStory concepts and workflows when grounding coding tasks.`
 
-Devin will automatically chunk and index the document. After indexing, Devin can retrieve relevant sections of the Intelligence Model when they are semantically related to the current task.
-
-For repositories with large Intelligence Models, re-export and re-upload `llms-full.txt` after each CoreStory re-ingestion to keep Devin's knowledge base current.
+Devin will automatically chunk and index the document. After indexing, Devin can retrieve relevant sections when they are semantically related to the current task.
 
 ## Step 2: Verify the Knowledge Base Integration
 
 Create a new Devin session and issue a verification task:
 
 ```
-Using the CoreStory Intelligence Model document in your knowledge base, describe what [ComponentName] does, including its inputs, outputs, and any business rules.
+Using the CoreStory document in your knowledge base, describe what Spec-Driven Development is and how CoreStory enables it.
 ```
 
-Devin should return a description that matches the Spec content in `llms-full.txt`. If Devin returns a generic or hallucinated response, check that the document was indexed successfully in the Knowledge panel.
+Devin should return a description consistent with CoreStory's conceptual framework. If Devin returns a generic or hallucinated response, check that the document was indexed successfully in the Knowledge panel.
 
-## Step 3: Inject a Spec via System Prompt for Task-Scoped Grounding
+## Step 3: Inject Spec Content via System Prompt for Task-Scoped Grounding
 
-For tasks where precise grounding is critical, inject the relevant Spec directly into the task's system prompt rather than relying solely on knowledge base retrieval. This ensures Devin has the exact Spec in its working context for the duration of the task.
+For tasks where precise grounding is critical, retrieve the relevant specification from CoreStory (via the dashboard, MCP, or API) and inject it directly into the task's system prompt. This ensures Devin has the exact specification in its working context for the duration of the task.
 
-When creating a Devin session or Playbook task, prepend the Spec content to the task description:
+When creating a Devin session or Playbook task, prepend the spec content to the task description:
 
 ```
 ## Grounding Context
 
-The following Spec was retrieved from CoreStory's Intelligence Model for the component you will modify:
+The following specification was retrieved from CoreStory for the component you will modify:
 
 ---
-Spec: OrderFulfillmentService
+Component: OrderFulfillmentService
 Purpose: Coordinates the end-to-end fulfillment workflow for confirmed orders, including warehouse picking, shipping label generation, and customer notification.
-Inputs: orderId (string), fulfillmentPriority (enum: STANDARD | EXPRESS | OVERNIGHT)
-Outputs: fulfillmentRecord (object: fulfillmentId, warehouseId, estimatedShipDate, trackingNumber)
 Dependencies: WarehouseAllocationService, ShippingLabelService, CustomerNotificationService, FulfillmentAuditLog
 Business rules:
   - EXPRESS and OVERNIGHT orders must be allocated to the nearest available warehouse.
@@ -1259,37 +1171,32 @@ This pattern gives Devin both the behavioral contract of the existing component 
 
 ## Step 4: Configure MCP Tool Use in Devin's Agent Loop
 
-Devin supports MCP tool connections for agents that can call external tools during task execution. To enable CoreStory MCP tool use within Devin's agent loop:
+Devin supports MCP tool connections for agents that can call external tools during task execution.
 
-1. Navigate to **Settings > Integrations > MCP Servers** in the Devin dashboard.
-2. Add the CoreStory MCP server:
+1. Navigate to **Settings > MCP Marketplace > "Add Your Own"** in the Devin dashboard.
+2. Set Transport to **HTTP**.
+3. Set URL to `https://c2s.corestory.ai/mcp`.
+4. Create a secret named `$API_TOKEN` with your CoreStory MCP token value.
+5. Set the Authorization header to `Bearer $API_TOKEN`.
 
-```json
-{
-  "name": "corestory",
-  "url": "https://llms.corestory.ai/mcp",
-  "transport": "http"
-}
+Once configured, Devin's agent loop can call CoreStory MCP tools during task execution. The available tools are:
+
+| Tool | Purpose |
+|------|---------|
+| `list_projects` | List all projects in the organization |
+| `get_project_prd` | Retrieve a project's PRD (supports section filtering) |
+| `get_project_techspec` | Retrieve a project's Technical Specification (supports section filtering) |
+| `list_conversations` | List conversations for a project |
+| `get_conversation` | Retrieve conversation details and history |
+| `create_conversation` | Start a new conversation about a project |
+| `rename_conversation` | Rename an existing conversation |
+| `send_message` | Send a message and receive an AI response grounded in the codebase |
+
+Include an instruction in the task prompt to trigger MCP usage:
+
 ```
-
-3. If authentication is required, add the API key header in the integration settings.
-
-Once configured, Devin's agent loop can call CoreStory MCP tools during task execution. Include an instruction in the task prompt to trigger this behavior:
-
+Before modifying any component, use the corestory get_project_techspec tool to retrieve the relevant specification sections. Use the retrieved spec as grounding context for all code changes.
 ```
-Before modifying any component, use the corestory get_by_slug tool to retrieve the relevant Spec. Use the retrieved Spec as grounding context for all code changes.
-```
-
-Devin will issue tool calls such as:
-
-```json
-{
-  "tool": "corestory__get_by_slug",
-  "arguments": { "slug": "order-fulfillment-service" }
-}
-```
-
-and incorporate the returned Spec into its reasoning before generating code.
 
 ## Step 5: Spec-Driven Development Workflow
 
@@ -1297,13 +1204,13 @@ A complete SDD cycle with Devin using knowledge base + system prompt injection:
 
 **Task**: Add a SAME_DAY fulfillment priority to `OrderFulfillmentService`.
 
-**1. Export the current Spec from CoreStory:**
+**1. Retrieve the current spec from CoreStory:**
 
-Use CoreStory's dashboard or MCP endpoint to retrieve the `order-fulfillment-service` Spec and copy its content.
+Use CoreStory's dashboard, MCP endpoint, or API to retrieve the relevant Technical Specification sections for the fulfillment service.
 
-**2. Create a Devin session with the Spec injected:**
+**2. Create a Devin session with the spec injected:**
 
-Paste the Spec as grounding context at the top of the task (as shown in Step 3).
+Paste the spec as grounding context at the top of the task (as shown in Step 3).
 
 **3. Specify the task precisely:**
 
@@ -1311,7 +1218,7 @@ Paste the Spec as grounding context at the top of the task (as shown in Step 3).
 Add SAME_DAY to the fulfillmentPriority enum. Implement the 14:00 cutoff check using the warehouse's local timezone. Deferred orders must call CustomerNotificationService with status=DEFERRED. Do not change behavior for STANDARD, EXPRESS, or OVERNIGHT priorities. All fulfillment attempts must still be written to FulfillmentAuditLog.
 ```
 
-**4. Review Devin's output against the Spec:**
+**4. Review Devin's output against the spec:**
 
 After Devin completes the task, verify that:
 - Existing business rules for STANDARD, EXPRESS, and OVERNIGHT are unchanged.
@@ -1320,17 +1227,18 @@ After Devin completes the task, verify that:
 
 ## Best Practices
 
-- Re-upload `llms-full.txt` to Devin's knowledge base after every CoreStory re-ingestion. Stale knowledge base content is a leading cause of Devin producing code inconsistent with the current codebase.
-- For critical tasks, inject the Spec directly in the system prompt rather than relying on knowledge base retrieval. Retrieval is probabilistic; direct injection is deterministic.
+- Re-upload `llms-full.txt` to Devin's knowledge base when the content is updated. Stale knowledge base content is a leading cause of Devin producing code inconsistent with the current codebase.
+- For critical tasks, inject the spec directly in the system prompt rather than relying on knowledge base retrieval. Retrieval is probabilistic; direct injection is deterministic.
 - Use Devin Playbooks to encode the system prompt injection pattern as a reusable template for your team's most common coding workflows.
-- When using MCP tool use, verify in Devin's task log that `get_by_slug` was called before code generation — not after.
+- When using MCP tool use, verify in Devin's task log that spec retrieval was called before code generation — not after.
 - Scope each Devin session to a single component or feature boundary. Broad sessions with many components are harder to ground effectively.
+- Use a dedicated MCP token for Devin so you can revoke access independently of other tools.
 
 ## Common Pitfalls
 
 - **Knowledge base document not indexed**: Devin may take several minutes to index an uploaded document. Do not start a session immediately after upload — wait for the indexing confirmation.
-- **Relying solely on knowledge base retrieval for complex tasks**: Knowledge base retrieval selects chunks by similarity; for tasks involving multiple interacting components, supplement with direct Spec injection to ensure all relevant context is present.
-- **Devin modifying behavior described in the Spec without instruction**: If Devin changes existing behavior, check whether the task description was ambiguous or conflicting with the Spec. Explicit constraints in the task prompt ("do not change X") prevent this.
+- **Relying solely on knowledge base retrieval for complex tasks**: Knowledge base retrieval selects chunks by similarity; for tasks involving multiple interacting components, supplement with direct spec injection to ensure all relevant context is present.
+- **Devin modifying behavior described in the spec without instruction**: If Devin changes existing behavior, check whether the task description was ambiguous or conflicting with the spec. Explicit constraints in the task prompt ("do not change X") prevent this.
 
 ## Related Pages
 
@@ -1340,11 +1248,6 @@ After Devin completes the task, verify that:
 - [→ Spec](../../definitions/spec)
 - [→ Spec-Driven Development (SDD)](../../definitions/sdd)
 - [→ Playbook (definition)](../../definitions/playbook)
-
----
-
-# COMPARISONS
-
 ---
 title: CoreStory vs. Manual Documentation
 slug: vs-manual-docs
@@ -1402,9 +1305,6 @@ Do not use manual documentation as a substitute for CoreStory grounding in agent
 - [→ Intelligence Model](../definitions/intelligence-model)
 - [→ Agent Grounding](../definitions/agent-grounding)
 - [→ SDD vs. Traditional SDLC](./sdd-vs-sdlc)
-
----
-
 ---
 title: SDD vs. Traditional SDLC
 slug: sdd-vs-sdlc
@@ -1461,9 +1361,6 @@ A practical adoption path: continue authoring requirements and design documents 
 - [→ Intelligence Model](../definitions/intelligence-model)
 - [→ Agent Grounding](../definitions/agent-grounding)
 - [→ CoreStory vs. Manual Documentation](./vs-manual-docs)
-
----
-
 ---
 title: MCP vs. RAG for Code Intelligence
 slug: mcp-vs-rag
@@ -1478,34 +1375,36 @@ last_reviewed: 2026-03-26
 
 Both MCP (Model Context Protocol) and RAG (Retrieval-Augmented Generation) can deliver CoreStory's Intelligence Model to AI coding agents. The right choice depends on the agent's capabilities, the team's infrastructure, and whether selective or comprehensive retrieval is the priority.
 
-MCP is an agent-initiated, runtime pull: the agent calls a tool endpoint and retrieves exactly the Spec it needs. RAG is a pre-indexed, similarity-based retrieval: a vector index is built from `llms-full.txt` in advance, and matching chunks are injected into the agent's prompt when a query arrives.
+MCP is an agent-initiated, runtime pull: the agent calls a tool endpoint and retrieves PRDs, Technical Specifications, or conducts conversations about the codebase. RAG is a pre-indexed, similarity-based retrieval: a vector index is built from `llms-full.txt` in advance, and matching chunks are injected into the agent's prompt when a query arrives.
 
 CoreStory supports both mechanisms. They are complementary, not mutually exclusive.
 
 ## When to Use Each
 
 **Use MCP when:**
-- The agent natively supports MCP tool calls (e.g., Claude Code)
-- The task requires precise, targeted retrieval of a specific Spec by slug
+- The agent natively supports MCP tool calls (e.g., Claude Code, Cursor, Devin)
+- The task requires targeted retrieval of specific specification sections
 - Retrieval latency from a live HTTP call is acceptable in the workflow
 - The Intelligence Model is updated frequently and stale pre-indexed content is a concern
+- You need interactive, AI-powered Q&A about the codebase via CoreStory conversations
 
 **Use RAG when:**
 - The agent does not support MCP but can receive injected context in its prompt
 - A custom agent framework manages retrieval and prompt construction
 - A knowledge base or RAG infrastructure is already in place for the team
-- Bulk context delivery (multiple Specs in a single retrieval pass) is preferred over targeted slug-based lookup
+- Bulk context delivery (multiple specification sections in a single retrieval pass) is preferred over targeted lookup
 
 ## Comparison
 
 | Dimension | MCP | RAG |
 |-----------|-----|-----|
-| **Retrieval mechanism** | Agent-initiated tool call to `https://llms.corestory.ai/mcp` at inference time | Pre-built vector index over `llms-full.txt`; similarity search at query time |
+| **Retrieval mechanism** | Agent-initiated tool call to `https://c2s.corestory.ai/mcp` at inference time | Pre-built vector index over `llms-full.txt`; similarity search at query time |
 | **Latency** | Adds one HTTP round-trip per tool call during inference | Index query latency (typically milliseconds); no live external call required |
-| **Agent compatibility** | Requires native MCP support in the agent (e.g., Claude Code, MCP-enabled Cursor) | Works with any agent or framework that accepts injected prompt context |
-| **Precision** | High: agent retrieves a specific Spec by exact slug, or a ranked list via search | Depends on chunk quality and embedding relevance; heading-aware chunking reduces off-target retrieval |
-| **Setup complexity** | Low for supported agents: add MCP server URL to agent configuration | Moderate: requires building and maintaining a vector index over `llms-full.txt` |
-| **CoreStory support** | Native: CoreStory exposes `get_by_slug`, `search`, and `list_pages` tools at the MCP endpoint | Native: CoreStory exports `llms-full.txt` as the recommended RAG corpus; recommended chunking is 512 tokens max, 50-token overlap |
+| **Agent compatibility** | Requires native MCP support in the agent (e.g., Claude Code, Cursor, Devin, VS Code, Windsurf, Factory.ai) | Works with any agent or framework that accepts injected prompt context |
+| **Precision** | High: agent retrieves specific specification sections by project and section name, or asks targeted questions via conversations | Depends on chunk quality and embedding relevance; heading-aware chunking reduces off-target retrieval |
+| **Setup complexity** | Low for supported agents: add MCP server URL and Bearer token to agent configuration | Moderate: requires building and maintaining a vector index over `llms-full.txt` |
+| **CoreStory support** | Native: CoreStory exposes `list_projects`, `get_project_prd`, `get_project_techspec`, and conversation tools at the MCP endpoint | Native: CoreStory exports `llms-full.txt` as the recommended RAG corpus; recommended chunking is 512 tokens max, 50-token overlap |
+| **Authentication** | Required: Bearer token in format `mcp_{token_id}.{jwt_token}` | None required for the static `llms-full.txt` file |
 
 ## Using Both Together
 
@@ -1513,7 +1412,7 @@ MCP and RAG address different retrieval scenarios and can be used in combination
 
 **Pattern: RAG for discovery, MCP for precision**
 
-Use a RAG pipeline to identify candidate Specs based on a broad semantic query, then use MCP `get_by_slug` to retrieve the full, authoritative content of each identified Spec. This is useful when the agent does not know the exact slug at the start of a task.
+Use a RAG pipeline to identify relevant areas based on a broad semantic query, then use MCP `get_project_techspec` with section filtering to retrieve the full, authoritative specification content. This is useful when the agent does not know which specification sections are relevant at the start of a task.
 
 **Pattern: RAG for agents without MCP, MCP for agents with it**
 
@@ -1521,7 +1420,7 @@ In a team using multiple agents — some MCP-native, some not — maintain both 
 
 **Pattern: Pre-session RAG injection + MCP refinement**
 
-At the start of a long session, inject a broad RAG selection of relevant Specs into the agent's initial context. During the session, use MCP tool calls to retrieve precise Specs for specific components as tasks narrow. This reduces the number of MCP calls while ensuring comprehensive initial grounding.
+At the start of a long session, inject a broad RAG selection of relevant context into the agent's initial context. During the session, use MCP tool calls to retrieve precise specification sections or ask targeted questions via conversations as tasks narrow. This reduces the number of MCP calls while ensuring comprehensive initial grounding.
 
 When re-ingesting the repository, update both the MCP endpoint (automatic, as the Intelligence Model is refreshed) and the RAG vector index (requires re-indexing `llms-full.txt`). RAG indices do not self-update; MCP always returns current Intelligence Model content.
 
@@ -1532,11 +1431,6 @@ When re-ingesting the repository, update both the MCP endpoint (automatic, as th
 - [→ Intelligence Model](../definitions/intelligence-model)
 - [→ Agent Grounding](../definitions/agent-grounding)
 - [→ CoreStory + Claude Code Playbook](../playbooks/playbook-claude)
-
----
-
-# AGENT SPEC TEMPLATES
-
 ---
 title: CoreStory Agent Spec Format
 slug: agent-spec-template
@@ -1549,9 +1443,9 @@ last_reviewed: 2026-03-26
 
 ## Purpose
 
-The CoreStory Agent Spec format defines standardized fields that AI coding agents use to ground their reasoning before acting on code. A Spec produced in this format provides the complete behavioral contract of a code component: what it does, what it depends on, what rules it enforces, and what constitutes correct behavior. Agents consuming a Spec in this format can generate, modify, or review code without reading source files.
+The CoreStory Agent Spec format defines a recommended structure for representing code component specifications in a way that AI coding agents can consume effectively. A Spec produced in this format provides a behavioral contract of a code component: what it does, what it depends on, what rules it enforces, and what constitutes correct behavior. Agents consuming a Spec in this format can generate, modify, or review code with accurate grounding.
 
-The format is designed to be injected into an agent's prompt directly or retrieved via the MCP endpoint using `get_by_slug`. It is machine-readable YAML. All fields are structured to support both human review and programmatic parsing by agent frameworks.
+This format is a recommended convention for teams that want to maintain structured, per-component specs alongside their source code. CoreStory's primary outputs — PRDs and Technical Specifications — provide project-level intelligence that can be retrieved via the MCP endpoint using `get_project_prd` and `get_project_techspec` with section filtering. The Agent Spec format below is a complementary, component-level format that teams can adopt for fine-grained agent grounding.
 
 ## Schema
 
@@ -1595,12 +1489,11 @@ examples:
     expected_output: string       # Expected output for the given input
 
 last_reviewed: YYYY-MM-DD        # ISO date of last Spec review or re-generation
-generated_by: string              # Source of the Spec (e.g., "CoreStory ingestion v2.1")
 ```
 
 ## Filled Example
 
-The following Spec was generated by CoreStory for the `calculateShippingCost` function in a retail order management system:
+The following is an example Spec for a `calculateShippingCost` function in a retail order management system:
 
 ```yaml
 module: shipping
@@ -1671,33 +1564,37 @@ examples:
     expected_output: "shipping_cost=0.00 (FREESHIP override applied)"
 
 last_reviewed: 2026-03-26
-generated_by: CoreStory ingestion v2.1
 ```
 
-## How to Generate
+## How to Populate
 
-CoreStory generates Specs in this format automatically during repository ingestion. To retrieve a Spec for use in an agent prompt:
+This format can be populated from CoreStory's project-level outputs:
 
-**Via MCP (`get_by_slug`):**
+**Via MCP — retrieve project specifications:**
 
 ```json
 {
-  "tool": "corestory__get_by_slug",
-  "arguments": { "slug": "calculate-shipping-cost" }
+  "tool": "corestory__get_project_techspec",
+  "arguments": { "project_id": 371, "sections": ["api_specifications"] }
 }
 ```
 
-The MCP server returns the Spec as structured content. Include the returned content in the agent's prompt before issuing a coding task.
+The Technical Specification includes architectural details, API contracts, data models, and behavioral descriptions that can be distilled into per-component specs in this format.
 
-**Via RAG pipeline:**
+**Via CoreStory conversations:**
 
-Index `llms-full.txt` using a heading-aware chunker (512-token max, 50-token overlap). Query the index with the component name or a description of the task. The matching chunk will contain the Spec in the format defined above.
+```json
+{
+  "tool": "corestory__send_message",
+  "arguments": { "conversation_id": "abc123", "message": "Describe the calculateShippingCost function including its inputs, outputs, dependencies, and business rules." }
+}
+```
+
+CoreStory's AI provides answers grounded in the actual codebase, which can be structured into this format.
 
 **Via CoreStory dashboard:**
 
-Navigate to the component in the CoreStory Intelligence Model dashboard. Use the **Copy Spec** button to copy the Spec content in YAML format for manual inclusion in a prompt.
-
-Slugs follow kebab-case derived from the component name (e.g., `calculateShippingCost` → `calculate-shipping-cost`). Use `list_pages` or `search` via MCP to discover slugs when they are not known.
+Navigate to the project in the CoreStory dashboard and review the Technical Specification and PRD. Extract component-level details into this YAML format for inclusion in agent prompts or repository storage.
 
 ## Where to Store
 
@@ -1717,15 +1614,15 @@ Storing Specs in version control alongside the source code ensures:
 - Spec history is tracked alongside code history in version control
 - CI/CD pipelines can validate that Specs are updated when the components they describe are modified
 
-After re-ingestion, overwrite the existing Spec files with the updated versions generated by CoreStory.
+After re-ingestion, review and update the existing Spec files based on the refreshed CoreStory specifications.
 
-## Integration with Playbooks
+## Integration with Playbooks and Agent Setup
 
-Each agent-specific Playbook describes how to retrieve and use Specs from this format in a specific tool's workflow:
+Each agent-specific integration guide describes how to connect to CoreStory's MCP server and retrieve specifications:
 
-- **Claude Code**: Use `get_by_slug` via MCP before every coding task. See [CoreStory + Claude Code Playbook](../playbooks/playbook-claude).
-- **Cursor**: Use `@corestory get_by_slug` in Chat or configure `.cursorrules` to enforce Spec retrieval. See [CoreStory + Cursor Playbook](../playbooks/playbook-cursor).
-- **Devin**: Upload `llms-full.txt` to Devin's knowledge base and inject Specs into task system prompts for critical grounding. See [CoreStory + Devin Playbook](../playbooks/playbook-devin).
+- **Claude Code**: Use `get_project_techspec` via MCP to retrieve specification sections before coding tasks. See [CoreStory + Claude Code Integration Guide](../playbooks/playbook-claude).
+- **Cursor**: Configure MCP in `.cursor/mcp.json` and use `@corestory` to retrieve specifications. See [CoreStory + Cursor Integration Guide](../playbooks/playbook-cursor).
+- **Devin**: Upload context to Devin's knowledge base and configure MCP for on-demand retrieval. See [CoreStory + Devin Integration Guide](../playbooks/playbook-devin).
 
 ## Related Pages
 
@@ -1734,4 +1631,3 @@ Each agent-specific Playbook describes how to retrieve and use Specs from this f
 - [→ Agent Grounding](../definitions/agent-grounding)
 - [→ MCP (Model Context Protocol)](../definitions/mcp)
 - [→ RAG Context](../definitions/rag-context)
-

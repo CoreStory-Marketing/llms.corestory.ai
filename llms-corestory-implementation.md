@@ -172,7 +172,7 @@ Responsibilities:
 - Chunk content from /content/ directory using heading-aware chunking
 - Generate embeddings (target: text-embedding-3-small or equivalent)
 - Index into vector store (Pinecone or pgvector)
-- Maintain the MCP server endpoint at llms.corestory.ai/mcp
+- Maintain the MCP server integration documentation (endpoint: c2s.corestory.ai/mcp)
 - Rebuild the index whenever new content is published (triggered by GitHub Actions)
 - Monitor retrieval quality: flag pages with poor chunk coherence
 
@@ -452,11 +452,12 @@ llms.corestory.ai/
 └── content-graph.md        # Canonical taxonomy + link map
 ```
 
-### MCP Endpoint Design
-- Path: `llms.corestory.ai/mcp`
-- Protocol: MCP (Model Context Protocol) spec
-- Capabilities: `search`, `get_page`, `list_pages`, `get_by_slug`
-- Auth: API key (for private access), open read (for public content)
+### MCP Endpoint
+- Path: `c2s.corestory.ai/mcp` (CoreStory's hosted MCP server)
+- Protocol: MCP (Model Context Protocol) over HTTP
+- Tools: `list_projects`, `get_project_prd`, `get_project_techspec`, `list_conversations`, `get_conversation`, `create_conversation`, `rename_conversation`, `send_message`
+- Auth: Required — Bearer token in format `mcp_{token_id}.{jwt_token}`, generated from CoreStory dashboard or API
+- Note: llms.corestory.ai does NOT host its own MCP server. It documents how to use CoreStory's MCP server at c2s.corestory.ai/mcp.
 
 ### RAG Strategy
 - Chunking: heading-aware, max 512 tokens per chunk, overlap 50 tokens
